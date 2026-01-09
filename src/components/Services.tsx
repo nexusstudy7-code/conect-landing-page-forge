@@ -63,7 +63,7 @@ const ServiceCard = ({ service, index }: { service: typeof services[0]; index: n
       <h3 className="font-display text-xl sm:text-2xl md:text-3xl mb-3 md:mb-4 tracking-wide">
         {service.title}
       </h3>
-      <p className="text-muted-foreground text-sm md:text-base leading-relaxed">
+      <p className="text-muted-foreground text-base leading-relaxed">
         {service.description}
       </p>
 

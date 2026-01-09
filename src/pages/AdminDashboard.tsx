@@ -182,7 +182,7 @@ const AdminDashboard = () => {
                 {/* Sidebar */}
                 <aside
                     className={`
-                        fixed md:static inset-y-0 left-0 z-50 bg-card flex flex-col border-r border-foreground/5 transition-all duration-300 ease-in-out
+                        fixed md:static inset-y-0 left-0 z-50 bg-card flex flex-col border-r border-foreground/5 transition-all duration-300 ease-in-out relative
                         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
                         ${isSidebarCollapsed ? 'md:w-20' : 'md:w-64'}
                         w-64
@@ -195,7 +195,7 @@ const AdminDashboard = () => {
                     {/* Toggle Button (Desktop) */}
                     <button
                         onClick={toggleSidebar}
-                        className="hidden md:flex absolute -right-3 top-9 bg-foreground text-background rounded-full p-1 shadow-lg hover:bg-foreground/90 transition-colors z-50"
+                        className="hidden md:flex absolute -right-3 top-20 bg-foreground text-background rounded-full p-1 shadow-lg hover:bg-foreground/90 transition-colors z-40"
                     >
                         {isSidebarCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
                     </button>
@@ -679,12 +679,12 @@ const AdminDashboard = () => {
                                                     <div
                                                         key={i}
                                                         className={`aspect-square p-2 border border-foreground/5 rounded-md relative group hover:border-foreground/30 transition-colors ${hasRecording ? 'bg-red-500/10 border-red-500/30' :
-                                                                hasMeeting ? 'bg-blue-500/10 border-blue-500/30' : 'bg-card'
+                                                            hasMeeting ? 'bg-blue-500/10 border-blue-500/30' : 'bg-card'
                                                             }`}
                                                     >
                                                         <span className={`text-sm ${dateStr === new Date().toISOString().split('T')[0]
-                                                                ? 'bg-foreground text-background w-6 h-6 flex items-center justify-center rounded-full'
-                                                                : 'text-muted-foreground'
+                                                            ? 'bg-foreground text-background w-6 h-6 flex items-center justify-center rounded-full'
+                                                            : 'text-muted-foreground'
                                                             }`}>
                                                             {dayNumber}
                                                         </span>

@@ -36,7 +36,7 @@ const testimonials = [
 
 const Testimonials = () => {
     const ref = useRef(null);
-    const isInView = useInView(ref, { margin: '-100px', amount: 0.3 });
+    const isInView = useInView(ref, { margin: '-50px', amount: 0.1 });
 
     const containerVariants = {
         hidden: { opacity: 0 },
@@ -113,9 +113,20 @@ const Testimonials = () => {
                                 </div>
 
                                 {/* Testimonial text */}
-                                <p className="text-foreground/90 text-base md:text-lg leading-relaxed">
+                                <p className="text-foreground/90 text-lg leading-relaxed">
                                     "{testimonial.text}"
                                 </p>
+
+                                {/* Author Info */}
+                                <div className="mt-6 pt-6 border-t border-foreground/5 flex items-center gap-4">
+                                    <div className="w-10 h-10 rounded-full bg-foreground/5 flex items-center justify-center font-display text-lg tracking-widest text-foreground/70">
+                                        {testimonial.name[0]}
+                                    </div>
+                                    <div>
+                                        <p className="font-medium text-foreground tracking-wide">{testimonial.name}</p>
+                                        <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                                    </div>
+                                </div>
                             </motion.div>
                         ))}
                     </div>
