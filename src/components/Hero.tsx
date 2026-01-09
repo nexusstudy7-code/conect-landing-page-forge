@@ -49,8 +49,8 @@ const Hero = () => {
       />
 
       {/* Floating plug icon - CSS animation */}
-      <div className="absolute top-[20%] right-[15%] text-foreground/10 animate-float hidden md:block">
-        <Plug size={80} strokeWidth={1} />
+      <div className="absolute top-[15%] right-[5%] md:top-[20%] md:right-[15%] text-foreground/10 animate-float hover:text-foreground/20 transition-colors">
+        <Plug className="w-14 h-14 md:w-20 md:h-20" strokeWidth={1} />
       </div>
 
       {/* Content */}
@@ -74,7 +74,7 @@ const Hero = () => {
 
           <motion.h1
             variants={itemVariants}
-            className="font-display text-4xl sm:text-5xl md:text-8xl lg:text-9xl leading-none mb-6 md:mb-8"
+            className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-9xl leading-none mb-6 md:mb-8"
           >
             Seja Referência,
             <br />

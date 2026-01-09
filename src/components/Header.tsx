@@ -16,7 +16,8 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const scrollDirection = useScrollDirection();
   const location = useLocation();
-  const isHidden = scrollDirection === 'down' && isScrolled;
+  // Header só aparece quando está no topo (isScrolled é false)
+  const isHidden = isScrolled;
 
   // Função para gerar o link correto
   const getLink = (href: string) => {
