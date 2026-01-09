@@ -1,0 +1,327 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Bebas+Neue&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Connect Agency - Premium Design System with Connection Theme */
+
+@layer base {
+  :root {
+    --background: 0 0% 2%;
+    --foreground: 0 0% 98%;
+
+    --card: 0 0% 6%;
+    --card-foreground: 0 0% 98%;
+
+    --popover: 0 0% 6%;
+    --popover-foreground: 0 0% 98%;
+
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 2%;
+
+    --secondary: 0 0% 12%;
+    --secondary-foreground: 0 0% 98%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 60%;
+
+    --accent: 0 0% 18%;
+    --accent-foreground: 0 0% 98%;
+
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 18%;
+    --input: 0 0% 15%;
+    --ring: 0 0% 98%;
+
+    --radius: 0rem;
+
+    /* Connect Brand Tokens */
+    --glass-bg: 0 0% 5% / 0.85;
+    --glass-border: 0 0% 98% / 0.08;
+    --glow: 0 0% 98% / 0.08;
+    --connection-line: 0 0% 98% / 0.06;
+    --energy-pulse: 0 0% 98% / 0.15;
+  }
+
+  .dark {
+    --background: 0 0% 2%;
+    --foreground: 0 0% 98%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    scroll-behavior: smooth;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-family: 'Inter', sans-serif;
+    background-image:
+      radial-gradient(ellipse at 20% 20%, hsl(0 0% 8%) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, hsl(0 0% 6%) 0%, transparent 50%),
+      radial-gradient(circle at 50% 50%, hsl(0 0% 4%) 0%, hsl(0 0% 2%) 100%);
+    background-attachment: fixed;
+    overflow-x: hidden;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.05em;
+  }
+
+  /* Performance optimizations */
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  img {
+    -webkit-user-drag: none;
+    user-select: none;
+  }
+}
+
+@layer components {
+  .glass {
+    background: hsl(var(--glass-bg));
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid hsl(var(--glass-border));
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, hsl(0 0% 100%) 0%, hsl(0 0% 50%) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .text-gradient-connect {
+    background: linear-gradient(180deg, hsl(0 0% 100%) 0%, hsl(0 0% 70%) 50%, hsl(0 0% 100%) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: gradient-flow 3s ease-in-out infinite;
+  }
+
+  @keyframes gradient-flow {
+
+    0%,
+    100% {
+      background-position: 0% 0%;
+    }
+
+    50% {
+      background-position: 0% 100%;
+    }
+  }
+
+  .border-glow {
+    border: 1px solid hsl(var(--glass-border));
+    transition: border-color 0.3s ease;
+    position: relative;
+  }
+
+  .border-glow:hover {
+    border-color: hsl(0 0% 98% / 0.15);
+  }
+
+  /* Connection theme - circular elements */
+  .connection-circle {
+    border-radius: 50%;
+    border: 1px solid hsl(var(--connection-line));
+  }
+
+  .connection-node {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: hsl(var(--foreground) / 0.3);
+    position: relative;
+  }
+
+  .connection-node::after {
+    content: '';
+    position: absolute;
+    inset: -4px;
+    border-radius: 50%;
+    border: 1px solid hsl(var(--foreground) / 0.1);
+    animation: pulse-ring 2s ease-out infinite;
+  }
+
+  @keyframes pulse-ring {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    100% {
+      transform: scale(2);
+      opacity: 0;
+    }
+  }
+
+  .nav-link {
+    position: relative;
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    bottom: -2px;
+    left: 0;
+    background: hsl(var(--foreground));
+    transform: scaleX(0);
+    transform-origin: right;
+    transition: transform 0.3s ease;
+  }
+
+  .nav-link:hover::after {
+    transform: scaleX(1);
+    transform-origin: left;
+  }
+
+  /* Plug/Connection inspired decorative element */
+  .plug-connector {
+    position: relative;
+  }
+
+  .plug-connector::before,
+  .plug-connector::after {
+    content: '';
+    position: absolute;
+    width: 6px;
+    height: 16px;
+    background: hsl(var(--foreground) / 0.2);
+    border-radius: 2px;
+    top: -20px;
+  }
+
+  .plug-connector::before {
+    left: calc(50% - 12px);
+  }
+
+  .plug-connector::after {
+    left: calc(50% + 6px);
+  }
+
+  /* Energy line animations */
+  .energy-line {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .energy-line::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, hsl(var(--foreground) / 0.5), transparent);
+    animation: energy-flow 2s ease-in-out infinite;
+  }
+
+  @keyframes energy-flow {
+    0% {
+      transform: translateX(-100%);
+    }
+
+    100% {
+      transform: translateX(100%);
+    }
+  }
+
+  .geometric-bg {
+    background-image:
+      radial-gradient(circle at 25% 25%, hsl(0 0% 10%) 0%, transparent 50%),
+      radial-gradient(circle at 75% 75%, hsl(0 0% 8%) 0%, transparent 50%);
+  }
+
+  /* Custom Date and Time Input Styling */
+  input[type="date"],
+  input[type="time"] {
+    color-scheme: dark;
+    position: relative;
+  }
+
+  input[type="date"]::-webkit-calendar-picker-indicator,
+  input[type="time"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0;
+    position: absolute;
+    right: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  /* Firefox date/time input styling */
+  input[type="date"]::-moz-calendar-picker-indicator,
+  input[type="time"]::-moz-calendar-picker-indicator {
+    cursor: pointer;
+  }
+
+  /* Ensure date/time inputs follow dark theme */
+  input[type="date"]::-webkit-datetime-edit,
+  input[type="time"]::-webkit-datetime-edit {
+    color: hsl(var(--foreground));
+  }
+
+  input[type="date"]::-webkit-datetime-edit-fields-wrapper,
+  input[type="time"]::-webkit-datetime-edit-fields-wrapper {
+    color: hsl(var(--foreground));
+  }
+
+  input[type="date"]::-webkit-datetime-edit-text,
+  input[type="time"]::-webkit-datetime-edit-text {
+    color: hsl(var(--muted-foreground));
+  }
+
+  input[type="date"]::-webkit-datetime-edit-month-field,
+  input[type="date"]::-webkit-datetime-edit-day-field,
+  input[type="date"]::-webkit-datetime-edit-year-field,
+  input[type="time"]::-webkit-datetime-edit-hour-field,
+  input[type="time"]::-webkit-datetime-edit-minute-field,
+  input[type="time"]::-webkit-datetime-edit-ampm-field {
+    color: hsl(var(--foreground));
+  }
+
+  input[type="date"]:focus::-webkit-datetime-edit-month-field,
+  input[type="date"]:focus::-webkit-datetime-edit-day-field,
+  input[type="date"]:focus::-webkit-datetime-edit-year-field,
+  input[type="time"]:focus::-webkit-datetime-edit-hour-field,
+  input[type="time"]:focus::-webkit-datetime-edit-minute-field {
+    background: hsl(var(--foreground) / 0.1);
+    color: hsl(var(--foreground));
+  }
+
+  /* Ensure interactive elements are always clickable above decorative elements */
+  a,
+  button {
+    position: relative;
+  }
+
+  /* Force buttons and links to be above scroll indicators and decorative elements */
+  @media (max-width: 768px) {
+
+    a,
+    button {
+      z-index: 30 !important;
+      pointer-events: auto !important;
+    }
+  }
+}
