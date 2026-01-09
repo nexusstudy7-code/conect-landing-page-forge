@@ -55,7 +55,7 @@ const Hero = () => {
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-6 relative z-20 pt-32 md:pt-32">
+      <div className="container mx-auto px-6 relative z-20 pt-36 md:pt-32">
         <motion.div
           className="max-w-4xl"
           variants={containerVariants}
@@ -65,7 +65,7 @@ const Hero = () => {
           {/* Connection node indicator */}
           <motion.div
             variants={itemVariants}
-            className="flex items-center gap-4 mb-6"
+            className="flex items-center gap-4 mb-4"
           >
             <div className="connection-node" />
             <p className="text-muted-foreground uppercase tracking-[0.3em] text-sm">
@@ -75,7 +75,7 @@ const Hero = () => {
 
           <motion.h1
             variants={itemVariants}
-            className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-[9rem] leading-[0.9] mb-6 md:mb-8 uppercase"
+            className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-[9rem] leading-[0.9] mb-6 md:mb-8 uppercase"
           >
             <span className="whitespace-nowrap">Seja Referência,</span>
             <br />

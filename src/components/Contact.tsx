@@ -33,7 +33,7 @@ const Contact = () => {
             initial={{ opacity: 0, y: 50, scale: 0.95 }}
             animate={isInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 50, scale: 0.95 }}
             transition={{ duration: 0.4, delay: 0.05, ease: EASING.premium }}
-            className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[0.9] mb-6 md:mb-8 uppercase"
+            className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-[9rem] leading-[0.9] mb-6 md:mb-8 uppercase"
           >
             Vamos criar uma
             <br />

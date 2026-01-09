@@ -2,6 +2,12 @@ import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { Quote, Star } from 'lucide-react';
 import { TRANSITIONS, TRANSITION_CLASSES } from '@/lib/animations';
+import Autoplay from 'embla-carousel-autoplay';
+import {
+    Carousel,
+    CarouselContent,
+    CarouselItem,
+} from '@/components/ui/carousel';
 
 const testimonials = [
     {
@@ -78,7 +84,7 @@ const Testimonials = () => {
                                 Feedbacks
                             </p>
                         </div>
-                        <h2 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[0.9] mb-6 uppercase">
+                        <h2 className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-[9rem] leading-[0.9] mb-6 uppercase">
                             O Que Nossos
                             <br />
                             <span className="text-gradient-connect">Clientes Dizem</span>
@@ -88,47 +94,61 @@ const Testimonials = () => {
                         </p>
                     </motion.div>
 
-                    {/* Testimonials Grid */}
-                    <div className="grid md:grid-cols-2 gap-6 max-w-6xl mx-auto">
-                        {testimonials.map((testimonial, index) => (
-                            <motion.div
-                                key={testimonial.id}
-                                variants={itemVariants}
-                                className={`group bg-card border border-foreground/10 p-6 md:p-8 hover:border-foreground/20 ${TRANSITION_CLASSES.smooth} relative overflow-hidden`}
-                            >
-                                {/* Energy line */}
-                                <div className="absolute bottom-0 left-0 w-full h-px energy-line" />
+                    {/* Testimonials Carousel */}
+                    <div className="max-w-6xl mx-auto">
+                        <Carousel
+                            opts={{
+                                align: 'start',
+                                loop: true,
+                            }}
+                            plugins={[
+                                Autoplay({ delay: 4000, stopOnInteraction: false, stopOnMouseEnter: true })
+                            ]}
+                            className="w-full"
+                        >
+                            <CarouselContent className="">
+                                {testimonials.map((testimonial, index) => (
+                                    <CarouselItem key={testimonial.id} className="md:basis-1/2 lg:basis-1/2 p-2">
+                                        <motion.div
+                                            variants={itemVariants}
+                                            className={`group bg-card border border-foreground/10 p-6 md:p-8 hover:border-foreground/20 ${TRANSITION_CLASSES.smooth} relative overflow-hidden h-full flex flex-col`}
+                                        >
+                                            {/* Energy line */}
+                                            <div className="absolute bottom-0 left-0 w-full h-px energy-line" />
 
-                                {/* Quote icon */}
-                                <div className="mb-6 relative">
-                                    <div className="absolute -inset-2 rounded-full border border-foreground/5 group-hover:border-foreground/10 transition-colors" />
-                                    <Quote size={32} className="text-muted-foreground/30 relative z-10" strokeWidth={1.5} />
-                                </div>
+                                            {/* Quote icon */}
+                                            <div className="mb-6 relative">
+                                                <div className="absolute -inset-2 rounded-full border border-foreground/5 group-hover:border-foreground/10 transition-colors" />
+                                                <Quote size={32} className="text-muted-foreground/30 relative z-10" strokeWidth={1.5} />
+                                            </div>
 
-                                {/* Rating */}
-                                <div className="flex gap-1 mb-4">
-                                    {[...Array(testimonial.rating)].map((_, i) => (
-                                        <Star key={i} size={16} className="fill-foreground text-foreground" />
-                                    ))}
-                                </div>
+                                            {/* Rating */}
+                                            <div className="flex gap-1 mb-4">
+                                                {[...Array(testimonial.rating)].map((_, i) => (
+                                                    <Star key={i} size={16} className="fill-foreground text-foreground" />
+                                                ))}
+                                            </div>
 
-                                {/* Testimonial text */}
-                                <p className="text-foreground/90 text-lg leading-relaxed">
-                                    "{testimonial.text}"
-                                </p>
+                                            {/* Testimonial text */}
+                                            <p className="text-foreground/90 text-lg leading-relaxed flex-grow">
+                                                "{testimonial.text}"
+                                            </p>
 
-                                {/* Author Info */}
-                                <div className="mt-6 pt-6 border-t border-foreground/5 flex items-center gap-4">
-                                    <div className="w-10 h-10 rounded-full bg-foreground/5 flex items-center justify-center font-display text-lg tracking-widest text-foreground/70">
-                                        {testimonial.name[0]}
-                                    </div>
-                                    <div>
-                                        <p className="font-medium text-foreground tracking-wide">{testimonial.name}</p>
-                                        <p className="text-sm text-muted-foreground">{testimonial.role}</p>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        ))}
+                                            {/* Author Info */}
+                                            <div className="mt-6 pt-6 border-t border-foreground/5 flex items-center gap-4">
+                                                <div className="w-10 h-10 rounded-full bg-foreground/5 flex items-center justify-center font-display text-lg tracking-widest text-foreground/70">
+                                                    {testimonial.name[0]}
+                                                </div>
+                                                <div>
+                                                    <p className="font-medium text-foreground tracking-wide">{testimonial.name}</p>
+                                                    <p className="text-sm text-muted-foreground">{testimonial.role}</p>
+                                                </div>
+                                            </div>
+                                        </motion.div>
+                                    </CarouselItem>
+                                ))}
+                            </CarouselContent>
+                        </Carousel>
                     </div>
 
                     {/* Stats */}

@@ -67,7 +67,7 @@ const About = () => {
               initial={{ opacity: 0, y: scrollDirection === 'down' ? 60 : -60, rotate: scrollDirection === 'down' ? 2 : -2 }}
               animate={isInView ? { opacity: 1, y: 0, rotate: 0 } : { opacity: 0, y: scrollDirection === 'down' ? 60 : -60, rotate: scrollDirection === 'down' ? 2 : -2 }}
               transition={{ duration: 0.4, delay: 0.05 }}
-              className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[0.9] mb-6 md:mb-8 uppercase"
+              className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-[9rem] leading-[0.9] mb-6 md:mb-8 uppercase"
             >
               Conexões
               <br />
