@@ -2,7 +2,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Calendar, Clock, Video, Users, Mail, Phone, User, Filter, Search, LogOut, UserCircle, Menu, X, UserPlus, ChevronLeft, ChevronRight } from 'lucide-react';
-import { TRANSITIONS, VARIANTS, TRANSITION_CLASSES } from '@/lib/animations';
+import { TRANSITIONS, DURATION, EASING, TRANSITION_CLASSES } from '@/lib/animations';
 import { supabase } from '@/lib/supabase/client';
 import type { Database } from '@/lib/supabase/types';
 
@@ -182,7 +182,7 @@ const AdminDashboard = () => {
                 {/* Sidebar */}
                 <aside
                     className={`
-                        fixed md:static inset-y-0 left-0 z-50 bg-card flex flex-col border-r border-foreground/5 transition-all duration-300 ease-in-out relative
+                        fixed md:static inset-y-0 left-0 z-50 bg-card flex flex-col border-r border-foreground/5 transition-all duration-fast ease-premium relative
                         ${isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
                         ${isSidebarCollapsed ? 'md:w-20' : 'md:w-64'}
                         w-64

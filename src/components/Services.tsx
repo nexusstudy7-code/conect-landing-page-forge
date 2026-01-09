@@ -7,6 +7,7 @@ import {
   CarouselContent,
   CarouselItem,
 } from '@/components/ui/carousel';
+import { TRANSITIONS, EASING, DURATION } from '@/lib/animations';
 
 const services = [
   {
@@ -36,7 +37,7 @@ const ServiceCard = ({ service, index }: { service: typeof services[0]; index: n
     <motion.div
       whileHover={{
         y: -8,
-        transition: { duration: 0.3 }
+        transition: { duration: DURATION.fast }
       }}
       className="group relative bg-card border-glow p-6 md:p-8 lg:p-10 h-full"
     >
@@ -44,7 +45,7 @@ const ServiceCard = ({ service, index }: { service: typeof services[0]; index: n
       <div className="absolute top-6 right-6 flex flex-col items-center">
         <div className="w-1 h-3 bg-foreground/10 rounded-full mb-1" />
         <div className="w-1 h-3 bg-foreground/10 rounded-full mb-2" />
-        <span className="font-display text-4xl text-foreground/10 group-hover:text-foreground/30 transition-colors duration-300">
+        <span className="font-display text-4xl text-foreground/10 group-hover:text-foreground/30 transition-colors duration-fast ease-premium">
           0{index + 1}
         </span>
       </div>
@@ -54,7 +55,7 @@ const ServiceCard = ({ service, index }: { service: typeof services[0]; index: n
         <div className="absolute -inset-2 rounded-full border border-foreground/5 group-hover:border-foreground/10 transition-colors" />
         <service.icon
           size={32}
-          className="text-muted-foreground group-hover:text-foreground transition-colors duration-300 relative z-10"
+          className="text-muted-foreground group-hover:text-foreground transition-colors duration-fast ease-premium relative z-10"
           strokeWidth={1.5}
         />
       </div>
@@ -71,7 +72,7 @@ const ServiceCard = ({ service, index }: { service: typeof services[0]; index: n
       <div className="absolute bottom-0 left-0 w-full h-px energy-line" />
 
       {/* Connection line effect on hover */}
-      <div className="absolute top-0 right-0 h-0 w-px bg-gradient-to-b from-foreground to-transparent group-hover:h-full transition-all duration-500" />
+      <div className="absolute top-0 right-0 h-0 w-px bg-gradient-to-b from-foreground to-transparent group-hover:h-full transition-all duration-normal ease-premium" />
     </motion.div>
   );
 };
@@ -99,7 +100,7 @@ const Services = () => {
           ref={headerRef}
           initial={{ opacity: 0, y: 40 }}
           animate={isHeaderInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
-          transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
+          transition={{ duration: DURATION.slow, ease: EASING.premium }}
           className="max-w-2xl mb-20"
         >
           <div className="flex items-center gap-4 mb-4">

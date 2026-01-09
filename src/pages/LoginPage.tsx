@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, User, ArrowRight, Plug } from 'lucide-react';
 import logo from '@/assets/connect-logo.jpg';
+import { TRANSITIONS, DURATION, EASING } from '@/lib/animations';
 
 const LoginPage = () => {
     const navigate = useNavigate();
@@ -57,7 +58,7 @@ const LoginPage = () => {
             <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
+                transition={{ duration: DURATION.slow, ease: EASING.premium }}
                 className="w-full max-w-md relative z-10"
             >
                 {/* Logo and Title */}
@@ -65,7 +66,7 @@ const LoginPage = () => {
                     <motion.div
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.5 }}
+                        transition={{ duration: DURATION.normal, ease: EASING.premium }}
                         className="flex justify-center mb-6"
                     >
                         <div className="relative">
@@ -77,7 +78,7 @@ const LoginPage = () => {
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.1 }}
+                        transition={{ duration: DURATION.normal, delay: 0.1, ease: EASING.premium }}
                         className="font-display text-4xl md:text-5xl mb-3"
                     >
                         Área Administrativa
@@ -86,7 +87,7 @@ const LoginPage = () => {
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.5, delay: 0.2 }}
+                        transition={{ duration: DURATION.normal, delay: 0.2, ease: EASING.premium }}
                         className="text-muted-foreground flex items-center justify-center gap-2"
                     >
                         <Plug size={14} />
@@ -98,7 +99,7 @@ const LoginPage = () => {
                 <motion.form
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: 0.3 }}
+                    transition={{ duration: DURATION.normal, delay: 0.3, ease: EASING.premium }}
                     onSubmit={handleSubmit}
                     className="bg-card border border-foreground/10 p-8 md:p-10 relative overflow-hidden"
                 >
@@ -165,7 +166,7 @@ const LoginPage = () => {
                             disabled={isLoading}
                             whileHover={{ scale: isLoading ? 1 : 1.02 }}
                             whileTap={{ scale: isLoading ? 1 : 0.98 }}
-                            className="group w-full inline-flex items-center justify-center gap-3 bg-foreground text-background px-8 py-4 text-sm uppercase tracking-wider font-medium hover:bg-foreground/90 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                            className="group w-full inline-flex items-center justify-center gap-3 bg-foreground text-background px-8 py-4 text-sm uppercase tracking-wider font-medium hover:bg-foreground/90 transition-colors duration-fast ease-premium disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                             {isLoading ? (
                                 <>
@@ -187,7 +188,7 @@ const LoginPage = () => {
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 0.4 }}
+                    transition={{ duration: DURATION.normal, delay: 0.4 }}
                     className="text-center mt-8"
                 >
                     <a
@@ -202,7 +203,7 @@ const LoginPage = () => {
                 <motion.div
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    transition={{ duration: 0.5, delay: 0.5 }}
+                    transition={{ duration: DURATION.normal, delay: 0.5 }}
                     className="mt-8 bg-card/50 border border-foreground/10 p-4 text-center"
                 >
                     <p className="text-xs text-muted-foreground mb-2 uppercase tracking-wider">Credenciais de Demonstração:</p>

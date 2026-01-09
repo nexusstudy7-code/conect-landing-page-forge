@@ -2,6 +2,7 @@ import { motion, useInView } from 'framer-motion';
 import { ArrowRight, Plug } from 'lucide-react';
 import { useRef } from 'react';
 import ConnectionLines from './ConnectionLines';
+import { TRANSITIONS, EASING, DURATION } from '@/lib/animations';
 
 const Hero = () => {
   const ref = useRef(null);
@@ -25,8 +26,8 @@ const Hero = () => {
       y: 0,
       scale: 1,
       transition: {
-        duration: 0.5,
-        ease: [0.25, 0.46, 0.45, 0.94] as const,
+        duration: DURATION.normal,
+        ease: EASING.premium,
       },
     },
   };
@@ -95,7 +96,7 @@ const Hero = () => {
           >
             <a
               href="#contato"
-              className="group inline-flex items-center justify-center gap-2 md:gap-3 bg-foreground text-background px-6 md:px-8 py-3 md:py-4 text-xs md:text-sm uppercase tracking-wider font-medium hover:bg-foreground/90 transition-all duration-300 relative overflow-hidden pointer-events-auto"
+              className="group inline-flex items-center justify-center gap-2 md:gap-3 bg-foreground text-background px-6 md:px-8 py-3 md:py-4 text-xs md:text-sm uppercase tracking-wider font-medium hover:bg-foreground/90 transition-all duration-fast ease-premium relative overflow-hidden pointer-events-auto"
               style={{ zIndex: 30 }}
             >
               <span className="relative z-10 flex items-center gap-2 md:gap-3">
@@ -105,7 +106,7 @@ const Hero = () => {
             </a>
             <a
               href="#servicos"
-              className="inline-flex items-center justify-center gap-2 md:gap-3 border border-foreground/30 px-6 md:px-8 py-3 md:py-4 text-xs md:text-sm uppercase tracking-wider hover:border-foreground hover:bg-foreground/5 transition-all duration-300 pointer-events-auto"
+              className="inline-flex items-center justify-center gap-2 md:gap-3 border border-foreground/30 px-6 md:px-8 py-3 md:py-4 text-xs md:text-sm uppercase tracking-wider hover:border-foreground hover:bg-foreground/5 transition-all duration-fast ease-premium pointer-events-auto"
               style={{ zIndex: 30 }}
             >
               <Plug size={14} className="opacity-50" />

@@ -1,10 +1,11 @@
 import { motion, useInView } from 'framer-motion';
 import { useRef } from 'react';
 import { ArrowUpRight, Plug } from 'lucide-react';
+import { TRANSITIONS, EASING, DURATION } from '@/lib/animations';
 
 const Contact = () => {
   const ref = useRef(null);
-  const isInView = useInView(ref, { margin: '-100px', amount: 0.3 });
+  const isInView = useInView(ref, { margin: '0px', amount: 0.2 });
 
   return (
     <section id="contato" className="py-32 relative overflow-hidden">
@@ -20,7 +21,7 @@ const Contact = () => {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: DURATION.fast }}
             className="flex items-center justify-center gap-4 mb-6"
           >
             <Plug size={16} className="text-muted-foreground" />
@@ -31,7 +32,7 @@ const Contact = () => {
           <motion.h2
             initial={{ opacity: 0, y: 50, scale: 0.95 }}
             animate={isInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 50, scale: 0.95 }}
-            transition={{ duration: 0.4, delay: 0.05, ease: [0.25, 0.46, 0.45, 0.94] }}
+            transition={{ duration: 0.4, delay: 0.05, ease: EASING.premium }}
             className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[0.9] mb-6 md:mb-8 uppercase"
           >
             Vamos criar uma
@@ -54,10 +55,10 @@ const Contact = () => {
             rel="noopener noreferrer"
             initial={{ opacity: 0, y: 30, scale: 0.9 }}
             animate={isInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 30, scale: 0.9 }}
-            transition={{ duration: 0.3, delay: 0.2 }}
-            whileHover={{ scale: 1.05, transition: { duration: 0.2 } }}
+            transition={{ duration: DURATION.fast, delay: 0.2 }}
+            whileHover={{ scale: 1.05, transition: { duration: DURATION.fast } }}
             whileTap={{ scale: 0.98 }}
-            className="group inline-flex items-center gap-3 md:gap-4 bg-foreground text-background px-8 md:px-10 py-4 md:py-5 text-base md:text-lg uppercase tracking-wider font-medium hover:bg-foreground/90 transition-colors duration-300"
+            className="group inline-flex items-center gap-3 md:gap-4 bg-foreground text-background px-8 md:px-10 py-4 md:py-5 text-base md:text-lg uppercase tracking-wider font-medium hover:bg-foreground/90 transition-colors duration-fast ease-premium"
           >
             <Plug size={20} className="opacity-60" />
             Conectar Agora

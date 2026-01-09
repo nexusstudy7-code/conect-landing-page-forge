@@ -5,6 +5,7 @@ export const EASING = {
     smooth: [0.25, 0.46, 0.45, 0.94] as const,
     spring: [0.34, 1.56, 0.64, 1] as const,
     soft: [0.4, 0, 0.2, 1] as const,
+    premium: [0.25, 0.46, 0.45, 0.94] as const,
 } as const;
 
 // Durações padrão
@@ -80,9 +81,9 @@ export const VARIANTS = {
 
 // Classes CSS para transições
 export const TRANSITION_CLASSES = {
-    smooth: 'transition-all duration-500 ease-out',
-    fast: 'transition-all duration-300 ease-out',
-    slow: 'transition-all duration-700 ease-out',
-    colors: 'transition-colors duration-500 ease-out',
-    transform: 'transition-transform duration-500 ease-out',
+    smooth: 'transition-all duration-normal ease-premium',
+    fast: 'transition-all duration-fast ease-premium',
+    slow: 'transition-all duration-slow ease-premium',
+    colors: 'transition-colors duration-normal ease-premium',
+    transform: 'transition-transform duration-normal ease-premium',
 } as const;

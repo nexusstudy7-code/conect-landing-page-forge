@@ -4,6 +4,7 @@ import { Menu, X } from 'lucide-react';
 import { Link, useLocation } from 'react-router-dom';
 import logo from '@/assets/connect-logo.jpg';
 import { useScrollDirection } from '@/hooks/useScrollDirection';
+import { TRANSITIONS, EASING, DURATION } from '@/lib/animations';
 
 const navLinks = [
   { name: 'Início', href: '#inicio' },
@@ -37,8 +38,8 @@ const Header = () => {
     <motion.header
       initial={{ y: -100 }}
       animate={{ y: isHidden ? -100 : 0 }}
-      transition={{ duration: 0.5, ease: [0.25, 0.46, 0.45, 0.94] }}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ease-out ${isScrolled ? 'bg-background/95 py-4' : 'py-6 bg-transparent'
+      transition={TRANSITIONS.smooth}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-slow ease-premium ${isScrolled ? 'bg-background/95 py-4' : 'py-6 bg-transparent'
         }`}
     >
       <div className="container mx-auto px-6 flex items-center justify-between">
@@ -54,7 +55,7 @@ const Header = () => {
             <a
               key={link.name}
               href={getLink(link.href)}
-              className="nav-link text-sm uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
+              className="nav-link text-sm uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors duration-fast ease-premium"
             >
               {link.name}
             </a>
@@ -68,7 +69,7 @@ const Header = () => {
           </Link>
           <a
             href={getLink('#contato')}
-            className="border border-foreground/30 px-6 py-2 text-sm uppercase tracking-wider hover:bg-foreground hover:text-background transition-all duration-300"
+            className="border border-foreground/30 px-6 py-2 text-sm uppercase tracking-wider hover:bg-foreground hover:text-background transition-all duration-fast ease-premium"
           >
             Contato
           </a>
@@ -91,7 +92,7 @@ const Header = () => {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: 'auto' }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.4, ease: [0.25, 0.46, 0.45, 0.94] }}
+            transition={{ duration: DURATION.fast, ease: EASING.smooth }}
             className="md:hidden bg-background/95"
           >
             <nav className="container mx-auto px-6 py-8 flex flex-col gap-6">
@@ -128,7 +129,7 @@ const Header = () => {
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.4 }}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="border border-foreground/30 px-6 py-3 text-center uppercase tracking-wider hover:bg-foreground hover:text-background transition-all duration-300"
+                className="border border-foreground/30 px-6 py-3 text-center uppercase tracking-wider hover:bg-foreground hover:text-background transition-all duration-fast ease-premium"
               >
                 Contato
               </motion.a>

@@ -86,6 +86,17 @@ export default {
         "pulse-glow": "pulse-glow 4s ease-in-out infinite",
         "spin-slow": "spin-slow 20s linear infinite",
       },
+      transitionDuration: {
+        "fast": "300ms",
+        "normal": "500ms",
+        "slow": "700ms",
+      },
+      transitionTimingFunction: {
+        "premium": "cubic-bezier(0.25, 0.46, 0.45, 0.94)",
+      },
+      scale: {
+        "102": "1.02",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
