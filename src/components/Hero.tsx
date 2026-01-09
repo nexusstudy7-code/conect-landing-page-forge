@@ -54,7 +54,7 @@ const Hero = () => {
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-6 relative z-20">
+      <div className="container mx-auto px-6 relative z-20 pt-32 md:pt-20">
         <motion.div
           className="max-w-4xl"
           variants={containerVariants}
@@ -74,7 +74,7 @@ const Hero = () => {
 
           <motion.h1
             variants={itemVariants}
-            className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-9xl leading-none mb-6 md:mb-8"
+            className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-[9rem] leading-[0.9] mb-6 md:mb-8 uppercase"
           >
             Seja Referência,
             <br />
@@ -83,7 +83,7 @@ const Hero = () => {
 
           <motion.p
             variants={itemVariants}
-            className="text-muted-foreground text-base md:text-lg lg:text-xl max-w-xl mb-8 md:mb-12 leading-relaxed"
+            className="text-muted-foreground text-sm sm:text-base md:text-xl max-w-xl mb-8 md:mb-12 leading-relaxed"
           >
             Conectamos sua marca ao sucesso. Estratégias de marketing
             que geram resultados mensuráveis e impacto duradouro.

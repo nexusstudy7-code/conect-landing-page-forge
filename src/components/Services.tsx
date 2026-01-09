@@ -108,7 +108,7 @@ const Services = () => {
               Nossos Serviços
             </p>
           </div>
-          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-none">
+          <h2 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[0.9] uppercase">
             Soluções que
             <br />
             <span className="text-gradient-connect">Conectam</span>

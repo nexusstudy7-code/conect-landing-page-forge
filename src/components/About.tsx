@@ -67,7 +67,7 @@ const About = () => {
               initial={{ opacity: 0, y: scrollDirection === 'down' ? 60 : -60, rotate: scrollDirection === 'down' ? 2 : -2 }}
               animate={isInView ? { opacity: 1, y: 0, rotate: 0 } : { opacity: 0, y: scrollDirection === 'down' ? 60 : -60, rotate: scrollDirection === 'down' ? 2 : -2 }}
               transition={{ duration: 0.4, delay: 0.05 }}
-              className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-none mb-6 md:mb-8"
+              className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[0.9] mb-6 md:mb-8 uppercase"
             >
               Conexões
               <br />
@@ -77,7 +77,7 @@ const About = () => {
               initial={{ opacity: 0, y: scrollDirection === 'down' ? 40 : -40 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: scrollDirection === 'down' ? 40 : -40 }}
               transition={{ duration: 0.35, delay: 0.1 }}
-              className="text-muted-foreground text-base md:text-lg leading-relaxed mb-4 md:mb-6"
+              className="text-muted-foreground text-sm sm:text-base leading-relaxed mb-4 md:mb-6"
             >
               A Connect nasceu da obsessão por criar conexões reais entre marcas e pessoas.
               Não criamos campanhas bonitas que não convertem. Cada estratégia é construída
@@ -87,7 +87,7 @@ const About = () => {
               initial={{ opacity: 0, y: scrollDirection === 'down' ? 30 : -30 }}
               animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: scrollDirection === 'down' ? 30 : -30 }}
               transition={{ duration: 0.35, delay: 0.15 }}
-              className="text-muted-foreground text-sm md:text-base leading-relaxed"
+              className="text-muted-foreground text-xs sm:text-sm leading-relaxed"
             >
               Somos o plug que conecta sua marca ao sucesso. Seu crescimento é nossa métrica.
             </motion.p>

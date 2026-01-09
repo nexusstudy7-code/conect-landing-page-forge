@@ -78,12 +78,12 @@ const Testimonials = () => {
                                 Feedbacks
                             </p>
                         </div>
-                        <h2 className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-none mb-6">
+                        <h2 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-[0.9] mb-6 uppercase">
                             O Que Nossos
                             <br />
                             <span className="text-gradient-connect">Clientes Dizem</span>
                         </h2>
-                        <p className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto">
+                        <p className="text-muted-foreground text-sm sm:text-base max-w-2xl mx-auto">
                             Feedbacks reais de clientes que transformaram suas marcas com a Connect.
                         </p>
                     </motion.div>
