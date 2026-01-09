@@ -55,7 +55,7 @@ const Hero = () => {
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-6 relative z-20 pt-32 md:pt-20">
+      <div className="container mx-auto px-6 relative z-20 pt-32 md:pt-32">
         <motion.div
           className="max-w-4xl"
           variants={containerVariants}
@@ -75,9 +75,9 @@ const Hero = () => {
 
           <motion.h1
             variants={itemVariants}
-            className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-[9rem] leading-[0.9] mb-6 md:mb-8 uppercase"
+            className="font-display text-5xl sm:text-7xl md:text-8xl lg:text-[9rem] leading-[0.9] mb-6 md:mb-8 uppercase"
           >
-            Seja Referência,
+            <span className="whitespace-nowrap">Seja Referência,</span>
             <br />
             Seja <span className="text-gradient-connect">Connect</span>
           </motion.h1>
