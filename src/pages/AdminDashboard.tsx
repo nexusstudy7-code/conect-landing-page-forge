@@ -197,7 +197,7 @@ const AdminDashboard = () => {
     };
 
     const handleRejectBooking = async (bookingId: string) => {
-        if (!confirm('Tem certeza que deseja rejeitar este agendamento?')) return;
+        // if (!confirm('Tem certeza que deseja rejeitar este agendamento?')) return;
 
         try {
             const { error } = await supabase
@@ -234,7 +234,7 @@ const AdminDashboard = () => {
 
     // Função para converter agendamento em cliente (migração manual se necessário)
     const handleConvertToClient = async (booking: Booking) => {
-        if (!confirm(`Deseja converter ${booking.name} em um cliente fiel e migrar o histórico?`)) return;
+        // if (!confirm(`Deseja converter ${booking.name} em um cliente fiel e migrar o histórico?`)) return;
 
         try {
             // Verifica se já existe

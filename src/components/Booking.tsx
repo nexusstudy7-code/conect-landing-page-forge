@@ -55,7 +55,16 @@ const Booking = () => {
 
     // Force show content if a type is selected, or if viewed, or if in view
     // Also ensuring it loads immediately if the user is already interacting
-    const showContent = hasViewed || isInView || !!selectedType;
+    // Force show content if a type is selected, or if viewed, or if in view
+    // Once hasViewed is true, we ignore isInView to prevent exit animations
+    const showContent = hasViewed || (isInView && !hasViewed) || !!selectedType;
+
+    // Additional effect to ensure we don't toggle back to false
+    useEffect(() => {
+        if (showContent && !hasViewed) {
+            setHasViewed(true);
+        }
+    }, [showContent, hasViewed]);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
