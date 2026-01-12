@@ -116,7 +116,7 @@ const Booking = () => {
     };
 
     return (
-        <section id="agenda" className="py-32 relative overflow-hidden">
+        <section id="agenda" className="py-32 relative md:overflow-hidden overflow-visible">
             {/* Background decorations */}
             <div className="absolute top-20 right-10 opacity-10 w-32 h-32 connection-circle animate-spin-slow hidden md:block" style={{ animationDuration: '60s' }} />
             <div className="absolute bottom-20 left-10 opacity-10 w-48 h-48 connection-circle animate-spin-slow hidden md:block" style={{ animationDuration: '80s', animationDirection: 'reverse' }} />
