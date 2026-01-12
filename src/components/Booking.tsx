@@ -75,24 +75,22 @@ const Booking = () => {
 
             const whatsappUrl = `https://wa.me/5584988156694?text=${encodeURIComponent(message)}`;
 
-            // Aguardar um pouco para mostrar a mensagem de sucesso
-            setTimeout(() => {
-                window.open(whatsappUrl, '_blank');
+            // Abrir WhatsApp imediatamente para evitar bloqueio de popup
+            window.open(whatsappUrl, '_blank');
 
-                // Resetar formulário após 2 segundos
-                setTimeout(() => {
-                    setFormData({
-                        name: '',
-                        email: '',
-                        phone: '',
-                        date: '',
-                        time: '',
-                        message: '',
-                    });
-                    setSelectedType('');
-                    setSubmitStatus('idle');
-                }, 2000);
-            }, 1000);
+            // Resetar formulário após 2 segundos
+            setTimeout(() => {
+                setFormData({
+                    name: '',
+                    email: '',
+                    phone: '',
+                    date: '',
+                    time: '',
+                    message: '',
+                });
+                setSelectedType('');
+                setSubmitStatus('idle');
+            }, 3000);
 
         } catch (error: any) {
             console.error('Error saving booking:', error);

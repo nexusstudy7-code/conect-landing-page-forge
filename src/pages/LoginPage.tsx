@@ -42,7 +42,7 @@ const LoginPage = () => {
     };
 
     return (
-        <div className="min-h-screen bg-background text-foreground flex items-center justify-center relative overflow-hidden px-6">
+        <div className="min-h-dvh bg-background text-foreground flex items-center justify-center relative overflow-x-hidden px-6 py-8">
             {/* Background decorations */}
             <div className="absolute top-1/4 right-1/4 w-[500px] h-[500px] connection-circle opacity-20 animate-spin-slow hidden md:block" style={{ animationDuration: '80s' }} />
             <div className="absolute bottom-1/4 left-1/4 w-[350px] h-[350px] connection-circle opacity-30 animate-spin-slow hidden md:block" style={{ animationDuration: '50s', animationDirection: 'reverse' }} />

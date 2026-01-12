@@ -164,7 +164,7 @@ const AdminDashboard = () => {
             <div className="min-h-screen bg-background text-foreground flex flex-col md:flex-row overflow-hidden admin-dashboard">
 
                 {/* Mobile Header */}
-                <div className="md:hidden flex items-center justify-between p-4 border-b border-foreground/10 bg-card z-50">
+                <div className="md:hidden flex items-center justify-between p-4 border-b border-foreground/10 bg-card z-[60]">
                     <span className="font-display text-xl tracking-widest">CONNECT</span>
                     <button onClick={toggleMobileMenu} className="p-2">
                         {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -188,7 +188,7 @@ const AdminDashboard = () => {
                         w-64
                     `}
                     style={{
-                        height: '100vh',
+                        height: '100dvh',
                         backgroundColor: 'hsl(0 0% 6%)',
                     }}
                 >
@@ -267,7 +267,7 @@ const AdminDashboard = () => {
                 </aside>
 
                 {/* Main Content */}
-                <main className="flex-1 overflow-auto h-[calc(100vh-65px)] md:h-screen w-full">
+                <main className="flex-1 overflow-auto h-[calc(100dvh-65px)] md:h-screen w-full">
 
                     <div className="p-8">
                         <AnimatePresence mode="wait">
