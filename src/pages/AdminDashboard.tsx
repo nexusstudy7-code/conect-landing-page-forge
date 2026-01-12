@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Clock, Video, Users, Mail, Phone, User, Filter, Search, LogOut, UserCircle, Menu, X, UserPlus, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, Clock, Video, Users, Mail, Phone, User, Filter, Search, LogOut, UserCircle, Menu, X, UserPlus, ChevronLeft, ChevronRight, Check, CheckCircle, UserCheck } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -26,6 +26,10 @@ const AdminDashboard = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedDate, setSelectedDate] = useState<string | null>(null);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+    // Calendar navigation state
+    const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
+    const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
 
     // Ref for main content to scroll to top
     const mainContentRef = useRef<HTMLDivElement>(null);
@@ -80,9 +84,11 @@ const AdminDashboard = () => {
 
     // Scroll to top when component mounts or tab changes
     useEffect(() => {
-        if (mainContentRef.current) {
-            mainContentRef.current.scrollTop = 0;
-        }
+        setTimeout(() => {
+            if (mainContentRef.current) {
+                mainContentRef.current.scrollTop = 0;
+            }
+        }, 100);
     }, [activeTab]);
 
     const handleLogout = () => {
@@ -91,8 +97,10 @@ const AdminDashboard = () => {
     };
 
     const filteredBookings = bookings.filter(booking => {
-        const matchesType = filter === 'all' || booking.type === filter;
-        const matchesStatus = statusFilter === 'all' || booking.status === statusFilter;
+        const normalizedStatus = booking.status ? booking.status.toLowerCase() : 'pending';
+        const normalizedType = booking.type ? booking.type.toLowerCase() : '';
+        const matchesType = filter === 'all' || normalizedType === filter;
+        const matchesStatus = statusFilter === 'all' || normalizedStatus === statusFilter;
         const matchesSearch = booking.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             booking.email.toLowerCase().includes(searchTerm.toLowerCase());
         return matchesType && matchesStatus && matchesSearch;
@@ -105,7 +113,8 @@ const AdminDashboard = () => {
     );
 
     const getStatusColor = (status: string) => {
-        switch (status) {
+        const normalized = status ? status.toLowerCase() : 'pending';
+        switch (normalized) {
             case 'pending': return 'text-yellow-500';
             case 'confirmed': return 'text-green-500';
             case 'completed': return 'text-blue-500';
@@ -114,7 +123,8 @@ const AdminDashboard = () => {
     };
 
     const getStatusLabel = (status: string) => {
-        switch (status) {
+        const normalized = status ? status.toLowerCase() : 'pending';
+        switch (normalized) {
             case 'pending': return 'Pendente';
             case 'confirmed': return 'Confirmado';
             case 'completed': return 'Concluído';
@@ -123,10 +133,13 @@ const AdminDashboard = () => {
     };
 
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
+
+    // Sidebar always collapsed as requested
+    const isSidebarCollapsed = true;
 
     const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
-    const toggleSidebar = () => setIsSidebarCollapsed(!isSidebarCollapsed);
+
+    // const toggleSidebar = () => setIsSidebarCollapsed(!isSidebarCollapsed);
 
     // Function to change tab and scroll to top
     const handleTabChange = (tab: 'bookings' | 'clients' | 'calendar') => {
@@ -138,6 +151,85 @@ const AdminDashboard = () => {
                 mainContentRef.current.scrollTop = 0;
             }
         }, 0);
+    };
+
+    // Calendar navigation functions
+    const goToPreviousMonth = () => {
+        if (currentMonth === 0) {
+            setCurrentMonth(11);
+            setCurrentYear(currentYear - 1);
+        } else {
+            setCurrentMonth(currentMonth - 1);
+        }
+    };
+
+    const goToNextMonth = () => {
+        if (currentMonth === 11) {
+            setCurrentMonth(0);
+            setCurrentYear(currentYear + 1);
+        } else {
+            setCurrentMonth(currentMonth + 1);
+        }
+    };
+
+    const goToToday = () => {
+        const today = new Date();
+        setCurrentMonth(today.getMonth());
+        setCurrentYear(today.getFullYear());
+    };
+
+    // Functions to update booking status
+    const handleConfirmBooking = async (bookingId: string) => {
+        try {
+            const { error } = await supabase
+                .from('bookings')
+                .update({ status: 'confirmed' })
+                .eq('id', bookingId);
+
+            if (error) throw error;
+
+            await fetchBookings(); // Refresh data
+            alert('Agendamento confirmado com sucesso!');
+        } catch (error) {
+            console.error('Error confirming booking:', error);
+            alert('Erro ao confirmar agendamento');
+        }
+    };
+
+    const handleRejectBooking = async (bookingId: string) => {
+        if (!confirm('Tem certeza que deseja rejeitar este agendamento?')) return;
+
+        try {
+            const { error } = await supabase
+                .from('bookings')
+                .delete()
+                .eq('id', bookingId);
+
+            if (error) throw error;
+
+            await fetchBookings(); // Refresh data
+            alert('Agendamento rejeitado e removido');
+        } catch (error) {
+            console.error('Error rejecting booking:', error);
+            alert('Erro ao rejeitar agendamento');
+        }
+    };
+
+    const handleCompleteBooking = async (bookingId: string) => {
+        try {
+            const { error } = await supabase
+                .from('bookings')
+                .update({ status: 'completed' })
+                .eq('id', bookingId);
+
+            if (error) throw error;
+
+            await fetchBookings(); // Refresh data
+            alert('Agendamento marcado como concluído!');
+        } catch (error) {
+            console.error('Error completing booking:', error);
+            alert('Erro ao concluir agendamento');
+        }
     };
 
     // Função para converter agendamento em cliente (migração manual se necessário)
@@ -178,6 +270,14 @@ const AdminDashboard = () => {
         }
     };
 
+    if (loading) {
+        return (
+            <div className="min-h-screen bg-black flex items-center justify-center text-white">
+                <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-white"></div>
+            </div>
+        );
+    }
+
     return (
         <>
             <style>{`
@@ -213,8 +313,8 @@ const AdminDashboard = () => {
                         <button
                             onClick={() => handleTabChange('bookings')}
                             className={`flex-1 flex items-center justify-center gap-2 py-3 text-xs uppercase tracking-wider transition-colors ${activeTab === 'bookings'
-                                    ? 'bg-foreground text-background'
-                                    : 'text-muted-foreground'
+                                ? 'bg-foreground text-background'
+                                : 'text-muted-foreground'
                                 }`}
                         >
                             <Calendar size={16} />
@@ -223,8 +323,8 @@ const AdminDashboard = () => {
                         <button
                             onClick={() => handleTabChange('clients')}
                             className={`flex-1 flex items-center justify-center gap-2 py-3 text-xs uppercase tracking-wider transition-colors border-x border-foreground/10 ${activeTab === 'clients'
-                                    ? 'bg-foreground text-background'
-                                    : 'text-muted-foreground'
+                                ? 'bg-foreground text-background'
+                                : 'text-muted-foreground'
                                 }`}
                         >
                             <UserCircle size={16} />
@@ -233,8 +333,8 @@ const AdminDashboard = () => {
                         <button
                             onClick={() => handleTabChange('calendar')}
                             className={`flex-1 flex items-center justify-center gap-2 py-3 text-xs uppercase tracking-wider transition-colors ${activeTab === 'calendar'
-                                    ? 'bg-foreground text-background'
-                                    : 'text-muted-foreground'
+                                ? 'bg-foreground text-background'
+                                : 'text-muted-foreground'
                                 }`}
                         >
                             <Clock size={16} />
@@ -256,13 +356,7 @@ const AdminDashboard = () => {
                         backgroundColor: 'hsl(0 0% 6%)',
                     }}
                 >
-                    {/* Toggle Button (Desktop) */}
-                    <button
-                        onClick={toggleSidebar}
-                        className="hidden md:flex absolute -right-3 top-20 bg-foreground text-background rounded-full p-1 shadow-lg hover:bg-foreground/90 transition-colors z-40"
-                    >
-                        {isSidebarCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
-                    </button>
+                    {/* Toggle Button removed permanently as requested */}
 
                     {/* Logo */}
                     <div className={`p-6 flex items-center ${isSidebarCollapsed ? 'justify-center' : 'justify-start gap-3'}`}>
@@ -331,7 +425,7 @@ const AdminDashboard = () => {
 
                 {/* Main Content */}
                 <main ref={mainContentRef} className="flex-1 overflow-auto h-[calc(100dvh-120px)] md:h-screen w-full">
-                    <div className="p-4 md:p-8 pt-2 md:pt-8">
+                    <div className="p-4 md:p-8">
                         <AnimatePresence mode="wait">
                             {activeTab === 'bookings' ? (
                                 <motion.div
@@ -527,19 +621,61 @@ const AdminDashboard = () => {
                                                                 </div>
                                                             )}
 
-                                                            <div className="flex flex-col gap-2 mt-4 pt-4 border-t border-foreground/10">
+                                                            <div className="flex flex-col gap-3 mt-4 pt-4 border-t border-foreground/10">
                                                                 <p className="text-xs text-muted-foreground mb-1">
                                                                     Solicitado em: {new Date(booking.created_at).toLocaleDateString('pt-BR')}
                                                                 </p>
 
-                                                                {/* Botão de conversão manual */}
-                                                                <button
-                                                                    onClick={() => handleConvertToClient(booking)}
-                                                                    className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors w-fit"
-                                                                >
-                                                                    <UserPlus size={14} />
-                                                                    Tornar Cliente
-                                                                </button>
+                                                                {/* Action Buttons */}
+                                                                <div className="flex flex-wrap gap-2">
+                                                                    {(booking.status?.toLowerCase() === 'pending' || !booking.status) && (
+                                                                        <>
+                                                                            <button
+                                                                                onClick={() => handleConfirmBooking(booking.id)}
+                                                                                className="flex items-center gap-2 px-3 py-2 text-xs uppercase tracking-wider bg-green-500/10 text-green-500 hover:bg-green-500/20 border border-green-500/30 hover:border-green-500/50 transition-colors rounded"
+                                                                            >
+                                                                                <Check size={14} />
+                                                                                Confirmar
+                                                                            </button>
+                                                                            <button
+                                                                                onClick={() => handleRejectBooking(booking.id)}
+                                                                                className="flex items-center gap-2 px-3 py-2 text-xs uppercase tracking-wider bg-red-500/10 text-red-500 hover:bg-red-500/20 border border-red-500/30 hover:border-red-500/50 transition-colors rounded"
+                                                                            >
+                                                                                <X size={14} />
+                                                                                Rejeitar
+                                                                            </button>
+                                                                        </>
+                                                                    )}
+
+                                                                    {booking.status?.toLowerCase() === 'confirmed' && (
+                                                                        <button
+                                                                            onClick={() => handleCompleteBooking(booking.id)}
+                                                                            className="flex items-center gap-2 px-3 py-2 text-xs uppercase tracking-wider bg-blue-500/10 text-blue-500 hover:bg-blue-500/20 border border-blue-500/30 hover:border-blue-500/50 transition-colors rounded"
+                                                                        >
+                                                                            <CheckCircle size={14} />
+                                                                            Concluir
+                                                                        </button>
+                                                                    )}
+
+                                                                    {/* Convert to Client Button */}
+                                                                    {/* Convert to Client Button */}
+                                                                    {booking.status?.toLowerCase() === 'completed' && (() => {
+                                                                        const isClient = clients.some(c => c.email === booking.email || c.phone === booking.phone);
+                                                                        return (
+                                                                            <button
+                                                                                onClick={() => !isClient && handleConvertToClient(booking)}
+                                                                                disabled={isClient}
+                                                                                className={`flex items-center gap-2 px-3 py-2 text-xs uppercase tracking-wider transition-colors rounded border ${isClient
+                                                                                    ? 'bg-foreground/5 text-muted-foreground border-transparent cursor-default'
+                                                                                    : 'text-muted-foreground hover:text-foreground border-foreground/20 hover:border-foreground/40'
+                                                                                    }`}
+                                                                            >
+                                                                                {isClient ? <UserCheck size={14} /> : <UserPlus size={14} />}
+                                                                                {isClient ? 'Cliente' : 'Tornar Cliente'}
+                                                                            </button>
+                                                                        );
+                                                                    })()}
+                                                                </div>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -651,7 +787,9 @@ const AdminDashboard = () => {
                                                                 <div className="grid grid-cols-2 gap-4">
                                                                     <div>
                                                                         <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wider">Total de Agendamentos</p>
-                                                                        <p className="font-display text-2xl">{client.total_bookings}</p>
+                                                                        <p className="font-display text-2xl">
+                                                                            {bookings.filter(b => b.email === client.email).length}
+                                                                        </p>
                                                                     </div>
                                                                     <div>
                                                                         <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wider">Último Agendamento</p>
@@ -676,13 +814,13 @@ const AdminDashboard = () => {
                                         </div>
                                         <div className="bg-card border border-foreground/10 p-4 md:p-6 text-center">
                                             <p className="font-display text-2xl md:text-3xl mb-1 md:mb-2">
-                                                {clients.reduce((acc, client) => acc + (client.total_bookings || 0), 0)}
+                                                {bookings.length}
                                             </p>
                                             <p className="text-xs md:text-sm text-muted-foreground uppercase tracking-wider">Agendamentos Totais</p>
                                         </div>
                                         <div className="bg-card border border-foreground/10 p-4 md:p-6 text-center col-span-2 md:col-span-1">
                                             <p className="font-display text-2xl md:text-3xl mb-1 md:mb-2">
-                                                {clients.length > 0 ? (clients.reduce((acc, client) => acc + (client.total_bookings || 0), 0) / clients.length).toFixed(1) : '0.0'}
+                                                {clients.length > 0 ? (bookings.length / clients.length).toFixed(1) : '0.0'}
                                             </p>
                                             <p className="text-xs md:text-sm text-muted-foreground uppercase tracking-wider">Média por Cliente</p>
                                         </div>
@@ -702,6 +840,38 @@ const AdminDashboard = () => {
                                     </div>
 
                                     <div className="bg-card border border-foreground/5 p-6 rounded-lg">
+                                        {/* Month Navigation */}
+                                        <div className="flex items-center justify-between mb-6">
+                                            <button
+                                                onClick={goToPreviousMonth}
+                                                className="p-2 hover:bg-foreground/5 rounded transition-colors"
+                                            >
+                                                <ChevronLeft size={20} />
+                                            </button>
+
+                                            <div className="text-center">
+                                                <h3 className="font-display text-2xl md:text-3xl">
+                                                    {new Date(currentYear, currentMonth).toLocaleDateString('pt-BR', {
+                                                        month: 'long',
+                                                        year: 'numeric'
+                                                    })}
+                                                </h3>
+                                                <button
+                                                    onClick={goToToday}
+                                                    className="text-xs text-muted-foreground hover:text-foreground transition-colors mt-1 uppercase tracking-wider"
+                                                >
+                                                    Hoje
+                                                </button>
+                                            </div>
+
+                                            <button
+                                                onClick={goToNextMonth}
+                                                className="p-2 hover:bg-foreground/5 rounded transition-colors"
+                                            >
+                                                <ChevronRight size={20} />
+                                            </button>
+                                        </div>
+
                                         {/* Simple Calendar Legends */}
                                         <div className="flex gap-4 mb-6 text-sm">
                                             <div className="flex items-center gap-2">
@@ -725,19 +895,24 @@ const AdminDashboard = () => {
                                         <div className="grid grid-cols-7 gap-2">
                                             {Array.from({ length: 35 }).map((_, i) => {
                                                 const today = new Date();
-                                                const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
-                                                const startPadding = firstDay.getDay(); // 0 (Sun) to 6 (Sat)
+                                                const firstDay = new Date(currentYear, currentMonth, 1);
+                                                const startPadding = firstDay.getDay();
 
-                                                // Adjust startPadding if your month renders incorrectly, but usually day 1 is placed at index 'startPadding'
                                                 const dayNumber = i - startPadding + 1;
-                                                const daysInMonth = new Date(today.getFullYear(), today.getMonth() + 1, 0).getDate();
+                                                const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
                                                 const isCurrentMonth = dayNumber > 0 && dayNumber <= daysInMonth;
 
+                                                // Check if this is today
+                                                const isToday = isCurrentMonth &&
+                                                    dayNumber === today.getDate() &&
+                                                    currentMonth === today.getMonth() &&
+                                                    currentYear === today.getFullYear();
+
                                                 const dateStr = isCurrentMonth
-                                                    ? `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, '0')}-${String(dayNumber).padStart(2, '0')}`
+                                                    ? `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(dayNumber).padStart(2, '0')}`
                                                     : '';
 
-                                                const dayBookings = bookings.filter(b => b.date === dateStr);
+                                                const dayBookings = bookings.filter(b => b.date === dateStr && b.status === 'confirmed');
                                                 const hasRecording = dayBookings.some(b => b.type === 'recording');
                                                 const hasMeeting = dayBookings.some(b => b.type === 'meeting');
 
@@ -752,8 +927,9 @@ const AdminDashboard = () => {
                                                                 setIsDialogOpen(true);
                                                             }
                                                         }}
-                                                        className={`aspect-square p-2 border border-foreground/5 rounded-md relative group hover:border-foreground/30 transition-colors cursor-pointer ${hasRecording ? 'bg-red-500/10 border-red-500/30' :
-                                                            hasMeeting ? 'bg-blue-500/10 border-blue-500/30' : 'bg-card'
+                                                        className={`aspect-square p-2 border rounded-md relative group hover:border-foreground/30 transition-colors cursor-pointer ${isToday ? 'ring-2 ring-foreground/50' : ''
+                                                            } ${hasRecording ? 'bg-red-500/10 border-red-500/30' :
+                                                                hasMeeting ? 'bg-blue-500/10 border-blue-500/30' : 'bg-card border-foreground/5'
                                                             }`}
                                                     >
                                                         <span className={`text-sm ${dateStr === new Date().toISOString().split('T')[0]

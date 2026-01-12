@@ -1,8 +1,8 @@
 {
-    "name": "Connect - Agência de Marketing Digital",
-    "short_name": "Connect",
-    "description": "Estratégias de marketing que transformam marcas em referências",
-    "start_url": "/",
+    "name": "Connect - Painel Administrativo",
+    "short_name": "Connect Admin",
+    "description": "Painel administrativo para gerenciar agendamentos e clientes",
+    "start_url": "/admin",
     "display": "standalone",
     "background_color": "#0a0a0a",
     "theme_color": "#000000",

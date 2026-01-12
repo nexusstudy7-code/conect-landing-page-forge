@@ -1,5 +1,5 @@
 import { motion, useInView } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Calendar, Clock, Video, Users, Plug, ArrowRight, CheckCircle, AlertCircle } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
@@ -20,8 +20,13 @@ const bookingTypes = [
 
 const Booking = () => {
     const ref = useRef(null);
-    const isInView = useInView(ref, { margin: '-100px', amount: 0.3 });
+    const isInView = useInView(ref, { margin: '0px', amount: 0, once: true });
+
+    // State declarations must come before usage
     const [selectedType, setSelectedType] = useState('');
+    const [hasViewed, setHasViewed] = useState(false);
+
+    // Form state
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -33,6 +38,24 @@ const Booking = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
     const [errorMessage, setErrorMessage] = useState('');
+
+    useEffect(() => {
+        if (isInView) {
+            setHasViewed(true);
+        }
+    }, [isInView]);
+
+    // Safeguard to ensure content shows up after a short delay even if intersection observer fails
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setHasViewed(true);
+        }, 100);
+        return () => clearTimeout(timer);
+    }, []);
+
+    // Force show content if a type is selected, or if viewed, or if in view
+    // Also ensuring it loads immediately if the user is already interacting
+    const showContent = hasViewed || isInView || !!selectedType;
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -125,7 +148,7 @@ const Booking = () => {
                 <motion.div
                     ref={ref}
                     initial={{ opacity: 0, y: 40 }}
-                    animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
+                    animate={showContent ? { opacity: 1, y: 0 } : { opacity: 0, y: 40 }}
                     transition={{ duration: 0.6 }}
                     className="max-w-5xl mx-auto"
                 >
@@ -133,7 +156,7 @@ const Booking = () => {
                     <div className="text-center mb-16">
                         <motion.div
                             initial={{ opacity: 0, y: 30 }}
-                            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+                            animate={showContent ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                             transition={{ duration: 0.3 }}
                             className="flex items-center justify-center gap-4 mb-6"
                         >
@@ -144,9 +167,9 @@ const Booking = () => {
                         </motion.div>
                         <motion.h2
                             initial={{ opacity: 0, y: 50 }}
-                            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+                            animate={showContent ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
                             transition={{ duration: 0.4, delay: 0.05 }}
-                            className="font-display text-4xl sm:text-5xl md:text-6xl lg:text-7xl leading-none mb-6"
+                            className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl leading-none mb-6"
                         >
                             Reserve Seu
                             <br />
@@ -154,7 +177,7 @@ const Booking = () => {
                         </motion.h2>
                         <motion.p
                             initial={{ opacity: 0, y: 30 }}
-                            animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+                            animate={showContent ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                             transition={{ duration: 0.35, delay: 0.1 }}
                             className="text-muted-foreground text-base md:text-lg max-w-2xl mx-auto"
                         >
@@ -168,7 +191,7 @@ const Booking = () => {
                             <motion.button
                                 key={type.title}
                                 initial={{ opacity: 0, y: 30 }}
-                                animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+                                animate={showContent ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
                                 transition={{ duration: 0.3, delay: 0.15 + index * 0.1 }}
                                 onClick={() => setSelectedType(index === 0 ? 'recording' : 'meeting')}
                                 className={`group relative bg-card border p-6 md:p-8 text-left transition-all duration-300 ${selectedType === (index === 0 ? 'recording' : 'meeting')
