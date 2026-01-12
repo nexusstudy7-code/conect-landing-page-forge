@@ -8,6 +8,24 @@ const Hero = () => {
   const ref = useRef(null);
   const isInView = useInView(ref, { amount: 0.5 });
 
+  // Função para scroll suave
+  const handleScrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, targetId: string) => {
+    e.preventDefault();
+    const id = targetId.replace('#', '');
+    const element = document.getElementById(id);
+
+    if (element) {
+      const headerOffset = 100;
+      const elementPosition = element.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -96,6 +114,7 @@ const Hero = () => {
           >
             <a
               href="#contato"
+              onClick={(e) => handleScrollToSection(e, '#contato')}
               className="group inline-flex items-center justify-center gap-2 md:gap-3 bg-foreground text-background px-6 md:px-8 py-3 md:py-4 text-xs md:text-sm uppercase tracking-wider font-medium hover:bg-foreground/90 transition-all duration-fast ease-premium relative overflow-hidden pointer-events-auto"
               style={{ zIndex: 30 }}
             >
@@ -106,6 +125,7 @@ const Hero = () => {
             </a>
             <a
               href="#servicos"
+              onClick={(e) => handleScrollToSection(e, '#servicos')}
               className="inline-flex items-center justify-center gap-2 md:gap-3 border border-foreground/30 px-6 md:px-8 py-3 md:py-4 text-xs md:text-sm uppercase tracking-wider hover:border-foreground hover:bg-foreground/5 transition-all duration-fast ease-premium pointer-events-auto"
               style={{ zIndex: 30 }}
             >

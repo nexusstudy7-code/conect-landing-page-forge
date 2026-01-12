@@ -199,21 +199,7 @@ const LoginPage = () => {
                     </a>
                 </motion.div>
 
-                {/* Demo Credentials Info */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: DURATION.normal, delay: 0.5 }}
-                    className="mt-8 bg-card/50 border border-foreground/10 p-4 text-center"
-                >
-                    <p className="text-xs text-muted-foreground mb-2 uppercase tracking-wider">Credenciais de Demonstração:</p>
-                    <p className="text-sm">
-                        <span className="text-muted-foreground">Usuário:</span> <span className="text-foreground font-mono">admin</span>
-                    </p>
-                    <p className="text-sm">
-                        <span className="text-muted-foreground">Senha:</span> <span className="text-foreground font-mono">connect2024</span>
-                    </p>
-                </motion.div>
+
             </motion.div>
         </div>
     );

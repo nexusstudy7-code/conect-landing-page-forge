@@ -17,13 +17,46 @@ const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const scrollDirection = useScrollDirection();
   const location = useLocation();
-  // Header só aparece quando está no topo (isScrolled é false)
-  const isHidden = isScrolled;
+  // Header sempre visível
+  const isHidden = false;
 
   // Função para gerar o link correto
   const getLink = (href: string) => {
     // Se estiver na home, usa âncora normal. Senão, adiciona / antes.
     return location.pathname === '/' ? href : `/${href}`;
+  };
+
+  // Função para navegação no desktop (com scroll manual para compensar header fixo)
+  const handleDesktopClick = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    e.preventDefault();
+
+    if (location.pathname !== '/') {
+      window.location.href = `/${href}`;
+      return;
+    }
+
+    const targetId = href.replace('#', '');
+    const targetElement = document.getElementById(targetId);
+
+    if (targetElement) {
+      const headerOffset = 100;
+      const elementPosition = targetElement.getBoundingClientRect().top;
+      const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      });
+    }
+  };
+
+  // Função simplificada para mobile (deixa o navegador lidar com a âncora)
+  const handleMobileClick = () => {
+    // Pequeno delay para garantir que o clique/tap seja registrado e a navegação inicie
+    // antes de remover o elemento do DOM
+    setTimeout(() => {
+      setIsMobileMenuOpen(false);
+    }, 150);
   };
 
   useEffect(() => {
@@ -55,6 +88,7 @@ const Header = () => {
             <a
               key={link.name}
               href={getLink(link.href)}
+              onClick={(e) => handleDesktopClick(e, link.href)}
               className="nav-link text-sm uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors duration-fast ease-premium"
             >
               {link.name}
@@ -69,6 +103,7 @@ const Header = () => {
           </Link>
           <a
             href={getLink('#contato')}
+            onClick={(e) => handleDesktopClick(e, '#contato')}
             className="border border-foreground/30 px-6 py-2 text-sm uppercase tracking-wider hover:bg-foreground hover:text-background transition-all duration-fast ease-premium"
           >
             Contato
@@ -89,35 +124,37 @@ const Header = () => {
       <AnimatePresence>
         {isMobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
+            initial={{ opacity: 0, scaleY: 0 }}
+            animate={{ opacity: 1, scaleY: 1 }}
+            exit={{ opacity: 0, scaleY: 0 }}
             transition={{ duration: DURATION.fast, ease: EASING.smooth }}
-            className="md:hidden bg-background/95"
+            style={{ transformOrigin: 'top' }}
+            className="md:hidden absolute top-[100%] left-0 right-0 bg-background border-b border-foreground/10 shadow-2xl z-50 overflow-hidden"
           >
-            <nav className="container mx-auto px-6 py-8 flex flex-col gap-6">
+            <nav className="flex flex-col p-4 gap-2">
               {navLinks.map((link, index) => (
                 <motion.a
                   key={link.name}
                   href={getLink(link.href)}
-                  initial={{ opacity: 0, x: -20 }}
+                  onClick={handleMobileClick}
+                  initial={{ opacity: 0, x: -10 }}
                   animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="text-lg uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors"
+                  transition={{ delay: index * 0.05 }}
+                  className="text-base font-medium uppercase tracking-wider text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-all py-3 px-4 rounded-md cursor-pointer block"
                 >
                   {link.name}
                 </motion.a>
               ))}
               <motion.div
-                initial={{ opacity: 0, x: -20 }}
+                initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.3 }}
+                transition={{ delay: 0.15 }}
+                className="w-full"
               >
                 <Link
                   to="/agenda"
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className={`text-lg uppercase tracking-wider transition-colors ${location.pathname === '/agenda' ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+                  onClick={handleMobileClick}
+                  className={`text-base font-medium uppercase tracking-wider transition-all py-3 px-4 rounded-md cursor-pointer block ${location.pathname === '/agenda' ? 'text-foreground bg-foreground/5' : 'text-muted-foreground hover:text-foreground hover:bg-foreground/5'
                     }`}
                 >
                   Agenda
@@ -125,11 +162,11 @@ const Header = () => {
               </motion.div>
               <motion.a
                 href={getLink('#contato')}
-                initial={{ opacity: 0, x: -20 }}
+                onClick={handleMobileClick}
+                initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 }}
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="border border-foreground/30 px-6 py-3 text-center uppercase tracking-wider hover:bg-foreground hover:text-background transition-all duration-fast ease-premium"
+                transition={{ delay: 0.2 }}
+                className="mt-2 text-base font-medium uppercase tracking-wider text-background bg-foreground hover:bg-foreground/90 transition-all py-3 px-4 rounded-md text-center cursor-pointer block shadow-sm"
               >
                 Contato
               </motion.a>
