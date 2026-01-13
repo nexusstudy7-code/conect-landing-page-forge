@@ -2,11 +2,12 @@
     "name": "Connect - Painel Administrativo",
     "short_name": "Connect Admin",
     "description": "Painel administrativo para gerenciar agendamentos e clientes",
-    "start_url": "/admin",
+    "start_url": "/login",
     "display": "standalone",
     "background_color": "#0a0a0a",
     "theme_color": "#000000",
     "orientation": "portrait-primary",
+    "scope": "/",
     "icons": [
         {
             "src": "/favicon.jpg",
@@ -23,7 +24,7 @@
     ],
     "categories": [
         "business",
-        "marketing"
+        "productivity"
     ],
     "screenshots": [
         {

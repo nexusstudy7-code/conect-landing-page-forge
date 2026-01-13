@@ -91,8 +91,8 @@ const AdminDashboard = () => {
         }, 100);
     }, [activeTab]);
 
-    const handleLogout = () => {
-        localStorage.removeItem('isAuthenticated');
+    const handleLogout = async () => {
+        await supabase.auth.signOut();
         navigate('/login');
     };
 

@@ -1,14 +1,15 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, User, ArrowRight, Plug } from 'lucide-react';
+import { Lock, Mail, ArrowRight, Plug } from 'lucide-react';
 import logo from '@/assets/connect-logo.jpg';
 import { TRANSITIONS, DURATION, EASING } from '@/lib/animations';
+import { supabase } from '@/lib/supabase/client';
 
 const LoginPage = () => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
-        username: '',
+        email: '',
         password: '',
     });
     const [error, setError] = useState('');
@@ -19,18 +20,21 @@ const LoginPage = () => {
         setError('');
         setIsLoading(true);
 
-        // Simulação de autenticação - em produção, isso seria uma chamada API
-        setTimeout(() => {
-            // Credenciais de exemplo (em produção, isso seria validado no backend)
-            if (formData.username === 'admin' && formData.password === 'connect2024') {
-                // Salvar token de autenticação
-                localStorage.setItem('isAuthenticated', 'true');
-                navigate('/admin');
-            } else {
-                setError('Usuário ou senha incorretos');
-                setIsLoading(false);
-            }
-        }, 1000);
+        try {
+            const { data, error } = await supabase.auth.signInWithPassword({
+                email: formData.email,
+                password: formData.password,
+            });
+
+            if (error) throw error;
+
+            // Supabase gerencia a sessão automaticamente
+            navigate('/admin');
+        } catch (error: any) {
+            setError(error.message || 'Email ou senha incorretos');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -107,23 +111,23 @@ const LoginPage = () => {
                     <div className="absolute top-0 left-0 w-full h-px energy-line" />
 
                     <div className="space-y-6">
-                        {/* Username */}
+                        {/* Email */}
                         <div>
-                            <label htmlFor="username" className="block text-sm uppercase tracking-wider mb-3 text-muted-foreground">
-                                Usuário
+                            <label htmlFor="email" className="block text-sm uppercase tracking-wider mb-3 text-muted-foreground">
+                                Email
                             </label>
                             <div className="relative">
-                                <User className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
+                                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" size={20} />
                                 <input
-                                    type="text"
-                                    id="username"
-                                    name="username"
+                                    type="email"
+                                    id="email"
+                                    name="email"
                                     required
-                                    value={formData.username}
+                                    value={formData.email}
                                     onChange={handleChange}
                                     className="w-full bg-background border border-foreground/10 pl-12 pr-4 py-3 text-foreground focus:border-foreground/30 focus:outline-none transition-colors"
-                                    placeholder="Digite seu usuário"
-                                    autoComplete="username"
+                                    placeholder="seu@email.com"
+                                    autoComplete="email"
                                 />
                             </div>
                         </div>
