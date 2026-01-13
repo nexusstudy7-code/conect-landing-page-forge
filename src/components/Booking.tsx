@@ -96,7 +96,8 @@ const Booking = () => {
 
             // Criar mensagem para WhatsApp
             const typeText = selectedType === 'recording' ? 'Gravação de Conteúdo' : 'Reunião Estratégica';
-            const message = `Olá! Gostaria de agendar um(a) *${typeText}*\n\n` +
+            const message = `🌐 *Novo Agendamento pelo Site*\n\n` +
+                `Olá! Gostaria de agendar um(a) *${typeText}*\n\n` +
                 `📋 *Dados:*\n` +
                 `Nome: ${formData.name}\n` +
                 `Email: ${formData.email}\n` +
