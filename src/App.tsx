@@ -7,6 +7,7 @@ import Index from "./pages/Index";
 import AgendaPage from "./pages/AgendaPage";
 import LoginPage from "./pages/LoginPage";
 import AdminDashboard from "./pages/AdminDashboard";
+import PortfolioPage from "./pages/PortfolioPage";
 import NotFound from "./pages/NotFound";
 import ScrollToTop from "./components/ScrollToTop";
 import { ProtectedRoute } from "./components/ProtectedRoute";
@@ -32,6 +33,7 @@ const App = () => (
               </ProtectedRoute>
             }
           />
+          <Route path="/portfolio" element={<PortfolioPage />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>

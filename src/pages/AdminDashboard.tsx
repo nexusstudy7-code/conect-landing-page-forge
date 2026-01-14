@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Clock, Video, Users, Mail, Phone, User, Filter, Search, LogOut, UserCircle, Menu, X, UserPlus, ChevronLeft, ChevronRight, Check, CheckCircle, UserCheck } from 'lucide-react';
+import { Calendar, Clock, Video, Users, Mail, Phone, User, Filter, Search, LogOut, UserCircle, Menu, X, UserPlus, ChevronLeft, ChevronRight, Check, CheckCircle, UserCheck, Briefcase } from 'lucide-react';
 import {
     Dialog,
     DialogContent,
@@ -13,6 +13,7 @@ import logo from '@/assets/connect-logo.jpg';
 import { TRANSITIONS, DURATION, EASING, TRANSITION_CLASSES } from '@/lib/animations';
 import { supabase } from '@/lib/supabase/client';
 import type { Database } from '@/lib/supabase/types';
+import { PortfolioContent } from '@/components/PortfolioContent';
 
 type Booking = Database['public']['Tables']['bookings']['Row'];
 type Client = Database['public']['Tables']['clients']['Row'];
@@ -20,7 +21,10 @@ type Client = Database['public']['Tables']['clients']['Row'];
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState<'bookings' | 'clients' | 'calendar'>('bookings');
+    const [activeTab, setActiveTab] = useState<'bookings' | 'clients' | 'calendar' | 'portfolio'>('bookings');
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    // const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+    const mainContentRef = useRef<HTMLDivElement>(null);
     const [filter, setFilter] = useState<'all' | 'recording' | 'meeting'>('all');
     const [statusFilter, setStatusFilter] = useState<'all' | 'pending' | 'confirmed' | 'completed'>('all');
     const [searchTerm, setSearchTerm] = useState('');
@@ -30,9 +34,6 @@ const AdminDashboard = () => {
     // Calendar navigation state
     const [currentMonth, setCurrentMonth] = useState(new Date().getMonth());
     const [currentYear, setCurrentYear] = useState(new Date().getFullYear());
-
-    // Ref for main content to scroll to top
-    const mainContentRef = useRef<HTMLDivElement>(null);
 
     // Real data from Supabase
     const [bookings, setBookings] = useState<Booking[]>([]);
@@ -132,8 +133,6 @@ const AdminDashboard = () => {
         }
     };
 
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
     // Sidebar always collapsed as requested
     const isSidebarCollapsed = true;
 
@@ -142,7 +141,7 @@ const AdminDashboard = () => {
     // const toggleSidebar = () => setIsSidebarCollapsed(!isSidebarCollapsed);
 
     // Function to change tab and scroll to top
-    const handleTabChange = (tab: 'bookings' | 'clients' | 'calendar') => {
+    const handleTabChange = (tab: 'bookings' | 'clients' | 'calendar' | 'portfolio') => {
         setActiveTab(tab);
         setIsMobileMenuOpen(false);
         // Immediate scroll to top
@@ -340,6 +339,16 @@ const AdminDashboard = () => {
                             <Clock size={16} />
                             <span className="hidden xs:inline">Calendário</span>
                         </button>
+                        <button
+                            onClick={() => handleTabChange('portfolio')}
+                            className={`flex-1 flex items-center justify-center gap-2 py-3 text-xs uppercase tracking-wider transition-colors border-l border-foreground/10 ${activeTab === 'portfolio'
+                                ? 'bg-foreground text-background'
+                                : 'text-muted-foreground hover:text-foreground'
+                                }`}
+                        >
+                            <Briefcase size={16} />
+                            <span className="hidden xs:inline">Portfólio</span>
+                        </button>
                     </div>
                 </div>
 
@@ -349,7 +358,7 @@ const AdminDashboard = () => {
                 <aside
                     className={`
                         hidden md:flex md:static inset-y-0 left-0 z-[110] bg-card flex-col border-r border-foreground/5 transition-all duration-fast ease-premium relative
-                        ${isSidebarCollapsed ? 'md:w-20' : 'md:w-64'}
+                        md:w-20
                     `}
                     style={{
                         height: '100dvh',
@@ -407,6 +416,18 @@ const AdminDashboard = () => {
                         >
                             <Clock size={20} />
                             {!isSidebarCollapsed && <span className="ml-3">Calendário</span>}
+                        </button>
+
+                        <button
+                            onClick={() => handleTabChange('portfolio')}
+                            className={`w-full flex items-center ${isSidebarCollapsed ? 'justify-center px-0' : 'justify-start px-4'} py-3 text-sm uppercase tracking-wider ${TRANSITION_CLASSES.smooth} ${activeTab === 'portfolio'
+                                ? 'bg-foreground text-background'
+                                : 'text-muted-foreground hover:text-foreground hover:bg-foreground/5'
+                                } group relative rounded-md`}
+                            title={isSidebarCollapsed ? "Portfólio" : ""}
+                        >
+                            <Briefcase size={20} />
+                            {!isSidebarCollapsed && <span className="ml-3">Portfólio</span>}
                         </button>
                     </nav>
 
@@ -826,7 +847,7 @@ const AdminDashboard = () => {
                                         </div>
                                     </div>
                                 </motion.div>
-                            ) : (
+                            ) : activeTab === 'calendar' ? (
                                 <motion.div
                                     key="calendar"
                                     initial={{ opacity: 0, x: 20 }}
@@ -1024,7 +1045,17 @@ const AdminDashboard = () => {
                                         </Dialog>
                                     </div>
                                 </motion.div>
-                            )}
+                            ) : activeTab === 'portfolio' ? (
+                                <motion.div
+                                    key="portfolio"
+                                    initial={{ opacity: 0, x: 20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
+                                    transition={TRANSITIONS.smooth}
+                                >
+                                    <PortfolioContent isAdmin={true} />
+                                </motion.div>
+                            ) : null}
                         </AnimatePresence>
                     </div>
                 </main>

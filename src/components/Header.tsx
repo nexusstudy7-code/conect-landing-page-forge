@@ -15,10 +15,11 @@ const navLinks = [
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isVisible, setIsVisible] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
   const scrollDirection = useScrollDirection();
   const location = useLocation();
-  // Header sempre visível
-  const isHidden = false;
+  const isHidden = !isVisible;
 
   // Função para gerar o link correto
   const getLink = (href: string) => {
@@ -61,11 +62,24 @@ const Header = () => {
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 50);
+      const currentScrollY = window.scrollY;
+      setIsScrolled(currentScrollY > 50);
+
+      // Show header when scrolling up or at top
+      if (currentScrollY < lastScrollY || currentScrollY < 50) {
+        setIsVisible(true);
+      }
+      // Hide header when scrolling down
+      else if (currentScrollY > lastScrollY && currentScrollY > 100) {
+        setIsVisible(false);
+        setIsMobileMenuOpen(false); // Close menu when hiding
+      }
+
+      setLastScrollY(currentScrollY);
     };
-    window.addEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [lastScrollY]);
 
   return (
     <motion.header
