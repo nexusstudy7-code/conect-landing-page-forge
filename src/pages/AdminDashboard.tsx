@@ -12,7 +12,7 @@ import {
 import logo from '@/assets/connect-logo.jpg';
 import { TRANSITIONS, DURATION, EASING, TRANSITION_CLASSES } from '@/lib/animations';
 import { supabase } from '@/lib/supabase/client';
-import type { Database } from '@/lib/supabase/types';
+import type { Database, Json } from '@/lib/supabase/types';
 import { PortfolioContent } from '@/components/PortfolioContent';
 import { toast } from 'sonner';
 
@@ -149,7 +149,7 @@ const AdminDashboard = () => {
                             .upsert({
                                 user_id: session?.user?.id || null,
                                 endpoint: endpoint,
-                                subscription: subJson as Record<string, unknown>,
+                                subscription: subJson as Json,
                                 updated_at: new Date().toISOString()
                             }, { onConflict: 'endpoint' });
 
