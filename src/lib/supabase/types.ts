@@ -14,6 +14,48 @@ export type Database = {
     }
     public: {
         Tables: {
+            audit_log: {
+                Row: {
+                    action: string
+                    created_at: string | null
+                    id: string
+                    ip_address: unknown
+                    new_data: Json | null
+                    old_data: Json | null
+                    record_id: string
+                    table_name: string
+                    user_agent: string | null
+                    user_email: string | null
+                    user_id: string | null
+                }
+                Insert: {
+                    action: string
+                    created_at?: string | null
+                    id?: string
+                    ip_address?: unknown
+                    new_data?: Json | null
+                    old_data?: Json | null
+                    record_id: string
+                    table_name: string
+                    user_agent?: string | null
+                    user_email?: string | null
+                    user_id?: string | null
+                }
+                Update: {
+                    action?: string
+                    created_at?: string | null
+                    id?: string
+                    ip_address?: unknown
+                    new_data?: Json | null
+                    old_data?: Json | null
+                    record_id?: string
+                    table_name?: string
+                    user_agent?: string | null
+                    user_email?: string | null
+                    user_id?: string | null
+                }
+                Relationships: []
+            }
             bookings: {
                 Row: {
                     created_at: string
@@ -65,7 +107,7 @@ export type Database = {
                     last_booking: string | null
                     name: string
                     phone: string
-                    total_bookings: number | null
+                    total_bookings: number
                     updated_at: string
                 }
                 Insert: {
@@ -76,7 +118,7 @@ export type Database = {
                     last_booking?: string | null
                     name: string
                     phone: string
-                    total_bookings?: number | null
+                    total_bookings?: number
                     updated_at?: string
                 }
                 Update: {
@@ -87,50 +129,77 @@ export type Database = {
                     last_booking?: string | null
                     name?: string
                     phone?: string
-                    total_bookings?: number | null
+                    total_bookings?: number
                     updated_at?: string
                 }
                 Relationships: []
             }
             portfolio: {
                 Row: {
-                    id: string
-                    title: string
-                    description: string | null
-                    category: 'video' | 'image' | 'project'
-                    image_url: string | null
-                    video_url: string | null
-                    thumbnail_url: string | null
+                    category: string
                     client_name: string | null
-                    tags: string[] | null
                     created_at: string
+                    description: string | null
+                    id: string
+                    image_url: string | null
+                    tags: string[] | null
+                    thumbnail_url: string | null
+                    title: string
                     updated_at: string
+                    video_url: string | null
                 }
                 Insert: {
-                    id?: string
-                    title: string
-                    description?: string | null
-                    category: 'video' | 'image' | 'project'
-                    image_url?: string | null
-                    video_url?: string | null
-                    thumbnail_url?: string | null
+                    category: string
                     client_name?: string | null
-                    tags?: string[] | null
                     created_at?: string
+                    description?: string | null
+                    id?: string
+                    image_url?: string | null
+                    tags?: string[] | null
+                    thumbnail_url?: string | null
+                    title: string
                     updated_at?: string
+                    video_url?: string | null
                 }
                 Update: {
-                    id?: string
-                    title?: string
-                    description?: string | null
-                    category?: 'video' | 'image' | 'project'
-                    image_url?: string | null
-                    video_url?: string | null
-                    thumbnail_url?: string | null
+                    category?: string
                     client_name?: string | null
-                    tags?: string[] | null
                     created_at?: string
+                    description?: string | null
+                    id?: string
+                    image_url?: string | null
+                    tags?: string[] | null
+                    thumbnail_url?: string | null
+                    title?: string
                     updated_at?: string
+                    video_url?: string | null
+                }
+                Relationships: []
+            }
+            push_subscriptions: {
+                Row: {
+                    created_at: string | null
+                    endpoint: string
+                    id: string
+                    subscription: Json
+                    updated_at: string | null
+                    user_id: string | null
+                }
+                Insert: {
+                    created_at?: string | null
+                    endpoint: string
+                    id?: string
+                    subscription: Json
+                    updated_at?: string | null
+                    user_id?: string | null
+                }
+                Update: {
+                    created_at?: string | null
+                    endpoint?: string
+                    id?: string
+                    subscription?: Json
+                    updated_at?: string | null
+                    user_id?: string | null
                 }
                 Relationships: []
             }
@@ -150,7 +219,8 @@ export type Database = {
     }
 }
 
-type DefaultSchema = Database[Extract<keyof Database, "public">]
+type DefaultSchema = Database["public"]
+
 type DatabaseWithoutInternals = Omit<Database, "__InternalSupabase">
 
 export type Tables<
@@ -163,7 +233,9 @@ export type Tables<
     ? keyof (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])
     : never = never,
-> = DefaultSchemaTableNameOrOptions extends { schema: keyof DatabaseWithoutInternals }
+> = DefaultSchemaTableNameOrOptions extends {
+    schema: keyof DatabaseWithoutInternals
+}
     ? (DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Tables"] &
         DatabaseWithoutInternals[DefaultSchemaTableNameOrOptions["schema"]]["Views"])[TableName] extends {
             Row: infer R

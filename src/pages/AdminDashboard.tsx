@@ -25,6 +25,22 @@ interface ExtendedNotificationOptions extends NotificationOptions {
     requireInteraction?: boolean;
 }
 
+// Auxiliar para converter a chave VAPID de string para Uint8Array (segurança e compatibilidade)
+function urlBase64ToUint8Array(base64String: string) {
+    const padding = '='.repeat((4 - base64String.length % 4) % 4);
+    const base64 = (base64String + padding)
+        .replace(/-/g, '+')
+        .replace(/_/g, '/');
+
+    const rawData = window.atob(base64);
+    const outputArray = new Uint8Array(rawData.length);
+
+    for (let i = 0; i < rawData.length; ++i) {
+        outputArray[i] = rawData.charCodeAt(i);
+    }
+    return outputArray;
+}
+
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
@@ -115,25 +131,25 @@ const AdminDashboard = () => {
 
                         const subscription = await registration.pushManager.subscribe({
                             userVisibleOnly: true,
-                            applicationServerKey: vapidPublicKey
+                            applicationServerKey: urlBase64ToUint8Array(vapidPublicKey)
                         });
 
-                        // Extrair dados da assinatura
-                        const subJson = JSON.parse(JSON.stringify(subscription));
-                        const endpoint = subJson.endpoint;
+                        console.log('Assinatura Push obtida:', subscription.endpoint);
+
+                        // Extrair dados da assinatura para o formato JSON (inclui endpoint e keys)
+                        const subJson = subscription.toJSON();
+                        const endpoint = subscription.endpoint;
 
                         // Obter o ID do usuário logado para vincular à assinatura
                         const { data: { session } } = await supabase.auth.getSession();
-
-                        console.log('Dados da assinatura prontos para salvar. Endpoint:', endpoint);
 
                         // Salvar assinatura no banco de dados vinculada ao Admin
                         const { error: subError } = await supabase
                             .from('push_subscriptions')
                             .upsert({
-                                user_id: session?.user?.id,
+                                user_id: session?.user?.id || null,
                                 endpoint: endpoint,
-                                subscription: subJson,
+                                subscription: subJson as Record<string, unknown>,
                                 updated_at: new Date().toISOString()
                             }, { onConflict: 'endpoint' });
 
