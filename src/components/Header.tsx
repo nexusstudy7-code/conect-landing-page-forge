@@ -100,18 +100,24 @@ const Header = () => {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-10">
           {navLinks.map((link) => (
-            <a
-              key={link.name}
-              href={link.useLink ? undefined : getLink(link.href)}
-              onClick={link.useLink ? undefined : (e) => handleDesktopClick(e, link.href)}
-              className="nav-link text-sm uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors duration-fast ease-premium"
-            >
-              {link.useLink ? (
-                <Link to={`/${link.href}`}>{link.name}</Link>
-              ) : (
-                link.name
-              )}
-            </a>
+            link.useLink ? (
+              <Link
+                key={link.name}
+                to={`/${link.href}`}
+                className="nav-link text-sm uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors duration-fast ease-premium"
+              >
+                {link.name}
+              </Link>
+            ) : (
+              <a
+                key={link.name}
+                href={getLink(link.href)}
+                onClick={(e) => handleDesktopClick(e, link.href)}
+                className="nav-link text-sm uppercase tracking-wider text-muted-foreground hover:text-foreground transition-colors duration-fast ease-premium"
+              >
+                {link.name}
+              </a>
+            )
           ))}
           <Link
             to="/agenda"
@@ -151,23 +157,37 @@ const Header = () => {
             className="md:hidden absolute top-[100%] left-0 right-0 bg-background border-b border-foreground/10 shadow-2xl z-50 overflow-hidden"
           >
             <nav className="flex flex-col p-4 gap-2">
-              {navLinks.map((link, index) => (
-                <motion.a
-                  key={link.name}
-                  href={link.useLink ? undefined : getLink(link.href)}
-                  onClick={link.useLink ? handleMobileClick : handleMobileClick}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.05 }}
-                  className="text-base font-medium uppercase tracking-wider text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-all py-3 px-4 rounded-md cursor-pointer block"
-                >
-                  {link.useLink ? (
-                    <Link to={`/${link.href}`}>{link.name}</Link>
-                  ) : (
-                    link.name
-                  )}
-                </motion.a>
-              ))}
+              {navLinks.map((link, index) => {
+                const className = "text-base font-medium uppercase tracking-wider text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-all py-3 px-4 rounded-md cursor-pointer block";
+                return link.useLink ? (
+                  <motion.div
+                    key={link.name}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                  >
+                    <Link
+                      to={`/${link.href}`}
+                      onClick={handleMobileClick}
+                      className={className}
+                    >
+                      {link.name}
+                    </Link>
+                  </motion.div>
+                ) : (
+                  <motion.a
+                    key={link.name}
+                    href={getLink(link.href)}
+                    onClick={handleMobileClick}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className={className}
+                  >
+                    {link.name}
+                  </motion.a>
+                );
+              })}
               <motion.div
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}

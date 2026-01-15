@@ -14,6 +14,7 @@ import { TRANSITIONS, DURATION, EASING, TRANSITION_CLASSES } from '@/lib/animati
 import { supabase } from '@/lib/supabase/client';
 import type { Database } from '@/lib/supabase/types';
 import { PortfolioContent } from '@/components/PortfolioContent';
+import { toast } from 'sonner';
 
 type Booking = Database['public']['Tables']['bookings']['Row'];
 type Client = Database['public']['Tables']['clients']['Row'];
@@ -81,7 +82,80 @@ const AdminDashboard = () => {
             setLoading(false);
         };
         loadData();
+
+        // Subscribe to real-time updates for new bookings
+        const channel = supabase
+            .channel('admin-bookings-changes')
+            .on(
+                'postgres_changes',
+                {
+                    event: 'INSERT',
+                    schema: 'public',
+                    table: 'bookings'
+                },
+                (payload) => {
+                    const newBooking = payload.new as Booking;
+
+                    // Notificar o admin (Visual)
+                    toast.success('Novo Agendamento!', {
+                        description: `${newBooking.name} agendou para ${new Date(newBooking.date).toLocaleDateString('pt-BR')}`,
+                        duration: 8000,
+                        action: {
+                            label: 'Ver Agora',
+                            onClick: () => {
+                                handleTabChange('bookings');
+                                fetchBookings();
+                            }
+                        }
+                    });
+
+                    // Notificar o admin (Nativa/Celular)
+                    showNativeNotification(newBooking);
+
+                    // Tocar som opcional (se o navegador permitir)
+                    try {
+                        const audio = new Audio('https://assets.mixkit.co/active_storage/sfx/2869/2869-preview.mp3');
+                        audio.volume = 0.5;
+                        audio.play();
+                    } catch (e) {
+                        console.log('Som de notificação bloqueado pelo navegador');
+                    }
+
+                    // Atualizar a lista automaticamente
+                    fetchBookings();
+                }
+            )
+            .subscribe();
+
+        // Pedir permissão para notificações nativas
+        if ('Notification' in window && Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+
+        return () => {
+            supabase.removeChannel(channel);
+        };
     }, []);
+
+    // Função para mostrar notificação nativa no sistema/celular
+    const showNativeNotification = (booking: Booking) => {
+        if ('Notification' in window && Notification.permission === 'granted') {
+            const notification = new Notification('Novo Agendamento Connect!', {
+                body: `${booking.name} agendou para ${new Date(booking.date).toLocaleDateString('pt-BR')}`,
+                icon: '/favicon.jpg', // Caminho do ícone
+                badge: '/favicon.jpg',
+                tag: 'new-booking', // Evita duplicatas
+                requireInteraction: true // Deixa na barra até o usuário agir
+            });
+
+            notification.onclick = () => {
+                window.focus();
+                handleTabChange('bookings');
+                fetchBookings();
+                notification.close();
+            };
+        }
+    };
 
     // Scroll to top when component mounts or tab changes
     useEffect(() => {
