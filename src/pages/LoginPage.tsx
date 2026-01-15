@@ -20,7 +20,12 @@ const LoginPage = () => {
         setError('');
         setIsLoading(true);
 
+        const remember = (e.target as any).remember.checked;
+
         try {
+            // No Supabase, a persistência é por padrão. 
+            // Se o usuário desmarcar, poderíamos tecnicamente limpar ao fechar o navegador,
+            // mas o pedido do usuário é justamente GARANTIR que fique conectado para notificações.
             const { data, error } = await supabase.auth.signInWithPassword({
                 email: formData.email,
                 password: formData.password,
@@ -28,7 +33,7 @@ const LoginPage = () => {
 
             if (error) throw error;
 
-            // Supabase gerencia a sessão automaticamente
+            // Redirecionar para o admin
             navigate('/admin');
         } catch (error: any) {
             setError(error.message || 'Email ou senha incorretos');
@@ -201,6 +206,18 @@ const LoginPage = () => {
                         </motion.button>
                     </div>
                 </motion.form>
+
+                {/* Important notice for notifications */}
+                <motion.div
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    transition={{ duration: DURATION.normal, delay: 0.4 }}
+                    className="mt-6 p-4 bg-foreground/5 border border-foreground/5 rounded-lg"
+                >
+                    <p className="text-[11px] text-muted-foreground leading-relaxed text-center uppercase tracking-wider">
+                        💡 Para receber notificações em tempo real no celular, mantenha a opção <span className="text-foreground">"Manter conectado"</span> ativa e adicione este site à sua <span className="text-foreground">Tela de Início</span>.
+                    </p>
+                </motion.div>
 
                 {/* Back to Home */}
                 <motion.div
