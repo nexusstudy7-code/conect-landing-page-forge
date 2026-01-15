@@ -45,6 +45,21 @@ const AdminDashboard = () => {
         typeof window !== 'undefined' ? Notification.permission : 'default'
     );
 
+    // Monitorar mudanças de permissão quando a aba volta a ser focada
+    useEffect(() => {
+        const checkPermission = () => {
+            if ('Notification' in window) {
+                console.log('Re-check permission:', Notification.permission);
+                setNotificationPermission(Notification.permission);
+            }
+        };
+
+        window.addEventListener('focus', checkPermission);
+        checkPermission(); // Checagem inicial
+
+        return () => window.removeEventListener('focus', checkPermission);
+    }, []);
+
     const requestNotificationPermission = async () => {
         console.log('Botão de notificação clicado!');
         if (!('Notification' in window)) {
