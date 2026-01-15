@@ -206,10 +206,20 @@ const AdminDashboard = () => {
 
     // Função para mostrar notificação nativa no sistema/celular (versão PWA/Mobile robusta)
     const showNativeNotification = async (booking: Booking) => {
-        if (!('Notification' in window) || Notification.permission !== 'granted') return;
+        console.log('Tentando mostrar notificação nativa para:', booking.name);
 
-        const title = 'Novo Agendamento Connect!';
-        const options = {
+        if (!('Notification' in window)) {
+            console.error('Navegador não suporta notificações');
+            return;
+        }
+
+        if (Notification.permission !== 'granted') {
+            console.warn('Permissão de notificação não concedida:', Notification.permission);
+            return;
+        }
+
+        const title = 'Novo Agendamento Connect! 🔌';
+        const options: NotificationOptions = {
             body: `${booking.name} agendou para ${new Date(booking.date).toLocaleDateString('pt-BR')}`,
             icon: '/notification-icon.png',
             badge: '/notification-icon.png',
@@ -220,14 +230,30 @@ const AdminDashboard = () => {
             }
         };
 
-        // Tentar via Service Worker (necessário para Mobile/PWA)
-        if ('serviceWorker' in navigator) {
+        // Use Service Worker registration if available for better background support
+        try {
+            console.log('Usando Service Worker para notificação...');
             const registration = await navigator.serviceWorker.ready;
-            registration.showNotification(title, options);
-        } else {
-            // Fallback para desktop se SW não disponível
-            new Notification(title, options);
+            await registration.showNotification(title, options);
+            console.log('Notificação enviada via Service Worker');
+        } catch (e) {
+            console.error('Erro no Service Worker, tentando fallback:', e);
+            try {
+                new Notification(title, options);
+                console.log('Notificação enviada via Fallback');
+            } catch (err) {
+                console.error('Falha crítica ao mostrar notificação:', err);
+            }
         }
+    };
+
+    const handleTestNotification = () => {
+        toast.info('Enviando notificação de teste...', { duration: 2000 });
+        showNativeNotification({
+            name: 'Teste de Sistema',
+            date: new Date().toISOString(),
+            status: 'pending'
+        } as any);
     };
 
     // Scroll to top when component mounts or tab changes
@@ -605,14 +631,22 @@ const AdminDashboard = () => {
                                 >
                                     {/* Header */}
                                     <div className="mb-4 md:mb-6 lg:mb-8">
-                                        {/* Discret Notification Prompt - Only shows when installed as App */}
-                                        {isStandalone && notificationPermission !== 'granted' && (
+                                        {/* Discret Notification Prompt */}
+                                        {notificationPermission !== 'granted' ? (
                                             <button
                                                 onClick={requestNotificationPermission}
                                                 className="group mb-4 flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-yellow-500/60 hover:text-yellow-500 transition-colors"
                                             >
                                                 <div className="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse" />
                                                 Ativar alertas no celular
+                                            </button>
+                                        ) : (
+                                            <button
+                                                onClick={handleTestNotification}
+                                                className="group mb-4 flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-green-500/40 hover:text-green-500 transition-colors"
+                                            >
+                                                <div className="w-1.5 h-1.5 rounded-full bg-green-500/40" />
+                                                Enviar notificação de teste
                                             </button>
                                         )}
                                         <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-none mb-2 md:mb-4">

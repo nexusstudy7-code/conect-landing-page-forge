@@ -78,3 +78,27 @@ self.addEventListener('notificationclick', (event) => {
         })
     );
 });
+
+// Push notification event - receive and show notifications even when closed
+self.addEventListener('push', (event) => {
+    if (!event.data) return;
+
+    try {
+        const data = event.data.json();
+        const title = data.title || 'Novo Agendamento Connect!';
+        const options = {
+            body: data.body || 'Você tem um novo agendamento no painel.',
+            icon: '/notification-icon.png',
+            badge: '/notification-icon.png',
+            tag: 'new-booking',
+            vibrate: [200, 100, 200],
+            data: {
+                url: data.url || '/admin'
+            }
+        };
+
+        event.waitUntil(self.registration.showNotification(title, options));
+    } catch (e) {
+        console.error('Error receiving push:', e);
+    }
+});
