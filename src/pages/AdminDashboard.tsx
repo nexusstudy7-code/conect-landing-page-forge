@@ -211,8 +211,8 @@ const AdminDashboard = () => {
         const title = 'Novo Agendamento Connect!';
         const options = {
             body: `${booking.name} agendou para ${new Date(booking.date).toLocaleDateString('pt-BR')}`,
-            icon: '/favicon.jpg',
-            badge: '/favicon.jpg',
+            icon: '/notification-icon.png',
+            badge: '/notification-icon.png',
             tag: 'new-booking',
             vibrate: [200, 100, 200], // Vibração no celular
             data: {
