@@ -46,14 +46,35 @@ const AdminDashboard = () => {
     );
 
     const requestNotificationPermission = async () => {
-        if ('Notification' in window) {
+        console.log('Botão de notificação clicado!');
+        if (!('Notification' in window)) {
+            alert('Este navegador não suporta notificações de desktop.');
+            return;
+        }
+
+        try {
+            // Alguns navegadores antigos usam callback, outros usam Promise
             const permission = await Notification.requestPermission();
+            console.log('Resultado da permissão:', permission);
+
             setNotificationPermission(permission);
+
             if (permission === 'granted') {
                 toast.success('Notificações ativadas!', {
                     description: 'Você receberá alertas de novos agendamentos.'
                 });
+
+                // Teste imediato
+                new Notification('Connect!', { body: 'Notificações configuradas com sucesso!' });
+            } else if (permission === 'denied') {
+                alert('Você bloqueou as notificações. Por favor, libere-as nas configurações do seu navegador para receber os alertas.');
             }
+        } catch (err) {
+            console.error('Erro ao pedir permissão:', err);
+            // Fallback para sintaxe de callback se necessário
+            Notification.requestPermission((permission) => {
+                setNotificationPermission(permission);
+            });
         }
     };
 
