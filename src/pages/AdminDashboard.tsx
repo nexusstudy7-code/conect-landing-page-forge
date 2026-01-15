@@ -19,6 +19,12 @@ import { toast } from 'sonner';
 type Booking = Database['public']['Tables']['bookings']['Row'];
 type Client = Database['public']['Tables']['clients']['Row'];
 
+// Extensão segura para opções de notificação que podem não estar no lib.dom básico
+interface ExtendedNotificationOptions extends NotificationOptions {
+    vibrate?: number[];
+    requireInteraction?: boolean;
+}
+
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
@@ -53,7 +59,7 @@ const AdminDashboard = () => {
     useEffect(() => {
         const checkStandalone = () => {
             const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
-                (window.navigator as any).standalone ||
+                (window.navigator as Navigator & { standalone?: boolean }).standalone ||
                 document.referrer.includes('android-app://');
             setIsStandalone(!!isPWA);
         };
@@ -112,22 +118,24 @@ const AdminDashboard = () => {
                             applicationServerKey: vapidPublicKey
                         });
 
-                        // Extrair chaves explicitamente do objeto PushSubscription
+                        // Extrair dados da assinatura
                         const subJson = JSON.parse(JSON.stringify(subscription));
+                        const endpoint = subJson.endpoint;
 
                         // Obter o ID do usuário logado para vincular à assinatura
                         const { data: { session } } = await supabase.auth.getSession();
 
-                        console.log('Dados da assinatura prontos para salvar');
+                        console.log('Dados da assinatura prontos para salvar. Endpoint:', endpoint);
 
                         // Salvar assinatura no banco de dados vinculada ao Admin
                         const { error: subError } = await supabase
                             .from('push_subscriptions')
                             .upsert({
                                 user_id: session?.user?.id,
+                                endpoint: endpoint,
                                 subscription: subJson,
                                 updated_at: new Date().toISOString()
-                            });
+                            }, { onConflict: 'endpoint' });
 
                         if (subError) {
                             console.error('Erro ao salvar assinatura no banco:', subError);
@@ -136,7 +144,8 @@ const AdminDashboard = () => {
                         }
                     }
                 } catch (pushErr) {
-                    console.warn('Este dispositivo/navegador não suporta Web Push de fundo ainda:', pushErr);
+                    const message = pushErr instanceof Error ? pushErr.message : 'Erro desconhecido';
+                    console.warn('Este dispositivo/navegador não suporta Web Push de fundo ainda:', message);
                 }
 
                 toast.success('Notificações ativadas!', {
@@ -147,8 +156,15 @@ const AdminDashboard = () => {
                 showNativeNotification({
                     name: 'Connect!',
                     date: new Date().toISOString(),
-                    message: 'Notificações ativadas com sucesso!'
-                } as any);
+                    message: 'Notificações ativadas com sucesso!',
+                    id: 'welcome',
+                    created_at: new Date().toISOString(),
+                    email: '',
+                    phone: '',
+                    status: 'confirmed',
+                    time: '',
+                    type: 'meeting'
+                } as Booking);
             } else if (permission === 'denied') {
                 toast.error('Notificações bloqueadas pelo navegador.');
             }
@@ -284,12 +300,14 @@ const AdminDashboard = () => {
         }
 
         const title = 'Novo Agendamento Connect! 🔌';
-        const options: NotificationOptions = {
-            body: booking.message || `${booking.name} agendou para ${new Date(booking.date).toLocaleDateString('pt-BR')}`,
+        const dateStr = booking.date ? new Date(booking.date).toLocaleDateString('pt-BR') : 'Nova data';
+
+        const options: ExtendedNotificationOptions = {
+            body: booking.message || `${booking.name} agendou para ${dateStr}`,
             icon: '/notification-icon.png',
             badge: '/notification-icon.png',
             tag: booking.id || 'new-booking',
-            vibrate: [500, 110, 500, 110, 450, 110, 200, 110, 170, 40, 450, 110, 200, 110, 170, 40, 500], // Vibração forte
+            vibrate: [500, 110, 500, 110, 450, 110, 200, 110, 170, 40, 450, 110, 200, 110, 170, 40, 500],
             requireInteraction: true,
             data: {
                 url: window.location.origin + '/admin'
@@ -298,7 +316,6 @@ const AdminDashboard = () => {
 
         // Use Service Worker registration if available for better background support
         try {
-            console.log('Usando Service Worker para notificação...');
             const registration = await navigator.serviceWorker.ready;
             await registration.showNotification(title, options);
             console.log('Notificação enviada via Service Worker');
@@ -306,7 +323,6 @@ const AdminDashboard = () => {
             console.error('Erro no Service Worker, tentando fallback:', e);
             try {
                 new Notification(title, options);
-                console.log('Notificação enviada via Fallback');
             } catch (err) {
                 console.error('Falha crítica ao mostrar notificação:', err);
             }
@@ -318,8 +334,15 @@ const AdminDashboard = () => {
         showNativeNotification({
             name: 'Teste de Sistema',
             date: new Date().toISOString(),
-            status: 'pending'
-        } as any);
+            status: 'pending',
+            id: 'test',
+            created_at: new Date().toISOString(),
+            email: 'teste@connect.com',
+            phone: '',
+            time: '12:00',
+            type: 'meeting',
+            message: 'Esta é uma notificação de teste.'
+        } as Booking);
     };
 
     // Scroll to top when component mounts or tab changes
@@ -427,16 +450,14 @@ const AdminDashboard = () => {
             if (error) throw error;
 
             await fetchBookings(); // Refresh data
-            alert('Agendamento confirmado com sucesso!');
+            toast.success('Agendamento confirmado com sucesso!');
         } catch (error) {
             console.error('Error confirming booking:', error);
-            alert('Erro ao confirmar agendamento');
+            toast.error('Erro ao confirmar agendamento');
         }
     };
 
     const handleRejectBooking = async (bookingId: string) => {
-        // if (!confirm('Tem certeza que deseja rejeitar este agendamento?')) return;
-
         try {
             const { error } = await supabase
                 .from('bookings')
@@ -446,10 +467,10 @@ const AdminDashboard = () => {
             if (error) throw error;
 
             await fetchBookings(); // Refresh data
-            alert('Agendamento rejeitado e removido');
+            toast.success('Agendamento rejeitado e removido');
         } catch (error) {
             console.error('Error rejecting booking:', error);
-            alert('Erro ao rejeitar agendamento');
+            toast.error('Erro ao rejeitar agendamento');
         }
     };
 
@@ -463,10 +484,10 @@ const AdminDashboard = () => {
             if (error) throw error;
 
             await fetchBookings(); // Refresh data
-            alert('Agendamento marcado como concluído!');
+            toast.success('Agendamento marcado como concluído!');
         } catch (error) {
             console.error('Error completing booking:', error);
-            alert('Erro ao concluir agendamento');
+            toast.error('Erro ao concluir agendamento');
         }
     };
 
@@ -483,7 +504,7 @@ const AdminDashboard = () => {
                 .single();
 
             if (existingClient) {
-                alert('Este cliente já existe na base de dados!');
+                toast.error('Este cliente já existe na base de dados!');
                 return;
             }
 
@@ -495,16 +516,16 @@ const AdminDashboard = () => {
                     email: booking.email,
                     phone: booking.phone,
                     last_booking: booking.date,
-                    // total_bookings será atualizado via trigger ou contagem futura
                 });
 
             if (error) throw error;
 
-            alert('Cliente criado com sucesso!');
+            toast.success('Cliente criado com sucesso!');
             fetchClients(); // Atualiza a lista
-        } catch (err: any) {
+        } catch (err) {
+            const message = err instanceof Error ? err.message : 'Erro desconhecido';
             console.error('Erro ao converter:', err);
-            alert('Erro ao converter cliente: ' + err.message);
+            toast.error('Erro ao converter cliente: ' + message);
         }
     };
 
