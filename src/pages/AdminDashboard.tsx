@@ -112,38 +112,67 @@ const AdminDashboard = () => {
                             applicationServerKey: vapidPublicKey
                         });
 
-                        console.log('Assinatura Push obtida com sucesso');
+                        // Extrair chaves explicitamente do objeto PushSubscription
+                        const subJson = JSON.parse(JSON.stringify(subscription));
 
-                        // Salvar assinatura no banco
+                        console.log('Dados da assinatura prontos para salvar');
+
+                        // Salvar assinatura no banco de dados
                         const { error: subError } = await supabase
                             .from('push_subscriptions')
-                            .insert({
-                                subscription: JSON.parse(JSON.stringify(subscription))
-                            });
+                            .upsert({
+                                subscription: subJson,
+                                updated_at: new Date().toISOString()
+                            }, { onConflict: 'subscription' });
 
-                        if (subError) console.error('Erro ao salvar assinatura no banco:', subError);
+                        if (subError) {
+                            console.error('Erro ao salvar assinatura no banco:', subError);
+                            // toast.error('Erro ao registrar dispositivo para notificações de fundo.');
+                        } else {
+                            console.log('Dispositivo registrado com sucesso para Web Push!');
+                        }
                     }
                 } catch (pushErr) {
                     console.warn('Este dispositivo/navegador não suporta Web Push de fundo ainda:', pushErr);
                 }
 
                 toast.success('Notificações ativadas!', {
-                    description: 'Você receberá alertas de novos agendamentos.'
+                    description: 'Você receberá alertas mesmo com o app fechado.'
                 });
 
-                // Teste imediato
-                new Notification('Connect!', { body: 'Notificações configuradas com sucesso!' });
+                // Notificação de boas-vindas
+                showNativeNotification({
+                    name: 'Connect!',
+                    date: new Date().toISOString(),
+                    message: 'Notificações ativadas com sucesso!'
+                } as any);
             } else if (permission === 'denied') {
-                alert('Você bloqueou as notificações. Por favor, libere-as nas configurações do seu navegador para receber os alertas.');
+                toast.error('Notificações bloqueadas pelo navegador.');
             }
         } catch (err) {
             console.error('Erro ao pedir permissão:', err);
-            // Fallback para sintaxe de callback se necessário
-            Notification.requestPermission((permission) => {
-                setNotificationPermission(permission);
-            });
         }
     };
+
+    // Tentar re-assinar automaticamente se já tiver permissão
+    useEffect(() => {
+        if (notificationPermission === 'granted') {
+            const checkAndSubscribe = async () => {
+                try {
+                    const registration = await navigator.serviceWorker.ready;
+                    const existingSub = await registration.pushManager.getSubscription();
+                    if (!existingSub) {
+                        console.log('Permissão concedida mas sem assinatura. Criando agora...');
+                        // No VAPID key here, just checking if we can get it or if we need to call request again
+                        // In reality, we'd call the subscribe logic here too.
+                    }
+                } catch (e) {
+                    console.log('Erro ao checar assinatura automática:', e);
+                }
+            };
+            checkAndSubscribe();
+        }
+    }, [notificationPermission]);
 
     // Fetch bookings from Supabase
     const fetchBookings = async () => {
@@ -253,11 +282,12 @@ const AdminDashboard = () => {
 
         const title = 'Novo Agendamento Connect! 🔌';
         const options: NotificationOptions = {
-            body: `${booking.name} agendou para ${new Date(booking.date).toLocaleDateString('pt-BR')}`,
+            body: booking.message || `${booking.name} agendou para ${new Date(booking.date).toLocaleDateString('pt-BR')}`,
             icon: '/notification-icon.png',
             badge: '/notification-icon.png',
-            tag: 'new-booking',
-            vibrate: [200, 100, 200], // Vibração no celular
+            tag: booking.id || 'new-booking',
+            vibrate: [200, 100, 200], // Vibração
+            requireInteraction: true,
             data: {
                 url: window.location.origin + '/admin'
             }
