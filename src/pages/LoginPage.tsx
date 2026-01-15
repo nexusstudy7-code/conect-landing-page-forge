@@ -207,17 +207,7 @@ const LoginPage = () => {
                     </div>
                 </motion.form>
 
-                {/* Important notice for notifications */}
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ duration: DURATION.normal, delay: 0.4 }}
-                    className="mt-6 p-4 bg-foreground/5 border border-foreground/5 rounded-lg"
-                >
-                    <p className="text-[11px] text-muted-foreground leading-relaxed text-center uppercase tracking-wider">
-                        💡 Para receber notificações em tempo real no celular, mantenha a opção <span className="text-foreground">"Manter conectado"</span> ativa e adicione este site à sua <span className="text-foreground">Tela de Início</span>.
-                    </p>
-                </motion.div>
+
 
                 {/* Back to Home */}
                 <motion.div
