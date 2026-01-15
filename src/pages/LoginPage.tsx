@@ -153,6 +153,20 @@ const LoginPage = () => {
                             </div>
                         </div>
 
+                        {/* Keep Connected */}
+                        <div className="flex items-center gap-3">
+                            <input
+                                type="checkbox"
+                                id="remember"
+                                name="remember"
+                                className="w-4 h-4 rounded border-foreground/10 bg-background accent-foreground cursor-pointer"
+                                defaultChecked
+                            />
+                            <label htmlFor="remember" className="text-sm text-muted-foreground uppercase tracking-[0.1em] cursor-pointer hover:text-foreground transition-colors">
+                                Manter conectado
+                            </label>
+                        </div>
+
                         {/* Error Message */}
                         {error && (
                             <motion.div
