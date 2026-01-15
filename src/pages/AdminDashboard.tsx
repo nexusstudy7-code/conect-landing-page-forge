@@ -115,19 +115,22 @@ const AdminDashboard = () => {
                         // Extrair chaves explicitamente do objeto PushSubscription
                         const subJson = JSON.parse(JSON.stringify(subscription));
 
+                        // Obter o ID do usuário logado para vincular à assinatura
+                        const { data: { session } } = await supabase.auth.getSession();
+
                         console.log('Dados da assinatura prontos para salvar');
 
-                        // Salvar assinatura no banco de dados
+                        // Salvar assinatura no banco de dados vinculada ao Admin
                         const { error: subError } = await supabase
                             .from('push_subscriptions')
                             .upsert({
+                                user_id: session?.user?.id,
                                 subscription: subJson,
                                 updated_at: new Date().toISOString()
-                            }, { onConflict: 'subscription' });
+                            });
 
                         if (subError) {
                             console.error('Erro ao salvar assinatura no banco:', subError);
-                            // toast.error('Erro ao registrar dispositivo para notificações de fundo.');
                         } else {
                             console.log('Dispositivo registrado com sucesso para Web Push!');
                         }
@@ -286,7 +289,7 @@ const AdminDashboard = () => {
             icon: '/notification-icon.png',
             badge: '/notification-icon.png',
             tag: booking.id || 'new-booking',
-            vibrate: [200, 100, 200], // Vibração
+            vibrate: [500, 110, 500, 110, 450, 110, 200, 110, 170, 40, 450, 110, 200, 110, 170, 40, 500], // Vibração forte
             requireInteraction: true,
             data: {
                 url: window.location.origin + '/admin'

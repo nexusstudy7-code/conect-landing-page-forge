@@ -91,7 +91,7 @@ self.addEventListener('push', (event) => {
             icon: '/notification-icon.png',
             badge: '/notification-icon.png',
             tag: 'new-booking',
-            vibrate: [200, 100, 200],
+            vibrate: [500, 110, 500, 110, 450, 110, 200, 110, 170, 40, 450, 110, 200, 110, 170, 40, 500],
             data: {
                 url: data.url || '/admin'
             }
