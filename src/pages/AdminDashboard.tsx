@@ -41,16 +41,22 @@ const AdminDashboard = () => {
     const [clients, setClients] = useState<Client[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>(
-        typeof window !== 'undefined' ? Notification.permission : 'default'
-    );
+    const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>(() => {
+        if (typeof window === 'undefined') return 'default';
+        const stashed = localStorage.getItem('connect_notification_dismissed');
+        if (stashed === 'true' && Notification.permission === 'granted') return 'granted';
+        return Notification.permission;
+    });
 
     // Monitorar mudanças de permissão quando a aba volta a ser focada
     useEffect(() => {
         const checkPermission = () => {
             if ('Notification' in window) {
-                console.log('Re-check permission:', Notification.permission);
-                setNotificationPermission(Notification.permission);
+                const currentStatus = Notification.permission;
+                setNotificationPermission(currentStatus);
+                if (currentStatus === 'granted') {
+                    localStorage.setItem('connect_notification_dismissed', 'true');
+                }
             }
         };
 
@@ -75,6 +81,7 @@ const AdminDashboard = () => {
             setNotificationPermission(permission);
 
             if (permission === 'granted') {
+                localStorage.setItem('connect_notification_dismissed', 'true');
                 toast.success('Notificações ativadas!', {
                     description: 'Você receberá alertas de novos agendamentos.'
                 });
