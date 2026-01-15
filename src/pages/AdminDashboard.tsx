@@ -574,34 +574,25 @@ const AdminDashboard = () => {
                                 >
                                     {/* Header */}
                                     <div className="mb-4 md:mb-6 lg:mb-8">
+                                        {/* Discret Notification Prompt */}
+                                        {notificationPermission !== 'granted' && (
+                                            <button
+                                                onClick={requestNotificationPermission}
+                                                className="group mb-4 flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-yellow-500/60 hover:text-yellow-500 transition-colors"
+                                            >
+                                                <div className="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse" />
+                                                Ativar alertas no celular
+                                            </button>
+                                        )}
                                         <h1 className="font-display text-3xl sm:text-4xl md:text-5xl lg:text-6xl leading-none mb-2 md:mb-4">
                                             Agendamentos
                                         </h1>
-                                        <p className="text-muted-foreground text-base md:text-lg">
+                                        <p className="text-muted-foreground text-sm md:text-base">
                                             Visualize e gerencie todos os agendamentos de gravações e reuniões.
                                         </p>
                                     </div>
 
-                                    {/* Notification Banner for Mobile */}
-                                    {notificationPermission !== 'granted' && (
-                                        <div className="mb-6 bg-yellow-500/10 border border-yellow-500/30 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
-                                            <div className="flex items-center gap-3">
-                                                <div className="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center text-yellow-500 flex-shrink-0">
-                                                    <Phone size={20} />
-                                                </div>
-                                                <div>
-                                                    <p className="font-medium text-sm">Notificações Desativadas</p>
-                                                    <p className="text-xs text-muted-foreground">Ative para receber alertas de novos clientes no celular.</p>
-                                                </div>
-                                            </div>
-                                            <button
-                                                onClick={requestNotificationPermission}
-                                                className="w-full sm:w-auto px-6 py-2 bg-yellow-500 text-black text-xs font-bold uppercase tracking-wider hover:bg-yellow-400 transition-colors"
-                                            >
-                                                Ativar Notificações
-                                            </button>
-                                        </div>
-                                    )}
+
 
                                     {/* Filters */}
                                     <div className="mb-8 space-y-4">
