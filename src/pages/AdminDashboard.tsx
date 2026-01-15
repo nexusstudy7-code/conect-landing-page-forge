@@ -48,6 +48,18 @@ const AdminDashboard = () => {
         return Notification.permission;
     });
 
+    const [isStandalone, setIsStandalone] = useState(false);
+
+    useEffect(() => {
+        const checkStandalone = () => {
+            const isPWA = window.matchMedia('(display-mode: standalone)').matches ||
+                (window.navigator as any).standalone ||
+                document.referrer.includes('android-app://');
+            setIsStandalone(!!isPWA);
+        };
+        checkStandalone();
+    }, []);
+
     // Monitorar mudanças de permissão quando a aba volta a ser focada
     useEffect(() => {
         const checkPermission = () => {
@@ -593,8 +605,8 @@ const AdminDashboard = () => {
                                 >
                                     {/* Header */}
                                     <div className="mb-4 md:mb-6 lg:mb-8">
-                                        {/* Discret Notification Prompt */}
-                                        {notificationPermission !== 'granted' && (
+                                        {/* Discret Notification Prompt - Only shows when installed as App */}
+                                        {isStandalone && notificationPermission !== 'granted' && (
                                             <button
                                                 onClick={requestNotificationPermission}
                                                 className="group mb-4 flex items-center gap-2 text-[10px] uppercase tracking-[0.2em] text-yellow-500/60 hover:text-yellow-500 transition-colors"
