@@ -185,10 +185,7 @@ const AdminDashboard = () => {
             )
             .subscribe();
 
-        // Pedir permissão para notificações nativas
-        if ('Notification' in window && Notification.permission === 'default') {
-            Notification.requestPermission();
-        }
+
 
         return () => {
             supabase.removeChannel(channel);
