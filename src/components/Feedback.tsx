@@ -11,27 +11,45 @@ import { TRANSITIONS, EASING, DURATION } from '@/lib/animations';
 
 const feedbacks = [
     {
-        name: 'Ricardo Almeida',
-        role: 'CEO, TechFlow Solutions',
-        text: 'A Connect transformou completamente nossa presença digital. O resultado superou todas as expectativas.',
+        name: 'Segmento de Agronomia',
+        role: 'Cliente Connect',
+        text: 'Deus abençoe você! Você é muito talentoso e se entrega ao trabalho que faz. Você vai longe! 🙌🙌',
         rating: 5,
     },
     {
-        name: 'Marina Costa',
-        role: 'Diretora de Marketing, Luxe Brand',
-        text: 'Profissionalismo e criatividade em cada detalhe. Nossa marca nunca esteve tão forte no mercado.',
+        name: 'Cheff de Cozinha',
+        role: 'Cliente Connect',
+        text: 'Muito obrigado! Deus retribua com bençãos 🙌. Estou gostando muito e que venham muitos outros trabalhos 🙏',
         rating: 5,
     },
     {
-        name: 'Felipe Santos',
-        role: 'Founder, StartUp Innovate',
-        text: 'Estratégias que realmente funcionam. Nosso ROI triplicou em apenas 6 meses de parceria.',
+        name: 'Fisioterapeuta e Radiologista',
+        role: 'Cliente Connect',
+        text: 'Passando para agradecer o trabalho de vocês, já sou cliente há mais de um ano e sempre me surpreendo com o trabalho lindo. O vídeo saiu perfeito e a paciência com as crianças foi muito importante. Equipe Connect é top! ❤️',
         rating: 5,
     },
     {
-        name: 'Juliana Ferreira',
-        role: 'CMO, Premium Retail',
-        text: 'A equipe da Connect entende profundamente o mercado de luxo. Resultados excepcionais.',
+        name: 'Loja de Roupas',
+        role: 'Cliente Connect',
+        text: 'Boa tarde, passando pra deixar um feedback. Acabei de fazer uma venda de 3 peças! A cliente disse que veio pela publicação do marketing do Boulevard, em busca da promoção que foi anunciada. 😍',
+        rating: 5,
+    },
+    {
+        name: 'Evento Infantil',
+        role: 'Cliente Connect',
+        text: 'Oiii! Eu amei muitoooo, vocês arrasaram! Muitas visualizações e vídeos incríveis. Já estou pronta pra próxima! 😍',
+        rating: 5,
+    },
+    {
+        name: 'Nutricionista',
+        role: 'Cliente Connect',
+        text: 'Experiência incrível! Desde a elaboração do roteiro até as orientações e suporte na hora da captação. Parabéns a equipe! 👏👏',
+        rating: 5,
+    },
+    {
+        name: 'Hamburgueria',
+        role: 'Cliente Connect',
+        text: 'Eu amei muitoooo, vocês arrasaram! Muitas visualizações e vídeos incríveis. Já estou pronta pra próxima! 😍',
         rating: 5,
     },
 ];
