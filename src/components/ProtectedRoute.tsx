@@ -9,7 +9,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         // Verificar sessão inicial
         supabase.auth.getSession().then(({ data: { session } }) => {
-            if (!session) {
+            if (!session || session.user.email !== 'admin@connect.com') {
                 navigate('/login');
             }
             setLoading(false);
@@ -17,7 +17,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
 
         // Escutar mudanças de autenticação
         const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-            if (!session) {
+            if (!session || session.user.email !== 'admin@connect.com') {
                 navigate('/login');
             }
         });
