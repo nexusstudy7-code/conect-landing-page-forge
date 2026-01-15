@@ -123,7 +123,7 @@ const AdminDashboard = () => {
                         const registration = await navigator.serviceWorker.ready;
 
                         // Chave pública VAPID (Este é um exemplo, para produção real deve-se usar as chaves do projeto)
-                        const vapidPublicKey = 'BO8_Wq_n43p5_WfX0_lW4_WfX0_lW4_WfX0_lW4_WfX0_lW4_WfX0_lW4_WfX0_lW4_WfX0_lW4_WfX0_lW4_WfX0_';
+                        const vapidPublicKey = 'BI03eeSr14b_UIiC_mpq7TD9zYxHE2TSo-eIdc-EbrRetgiS9W_HpVH1MlqAXGm6m5zEYb-pGVIPp2XhwDytNM0';
 
                         // Nota: Para o Web Push funcionar 100%, você precisará configurar as chaves no servidor.
                         // Mas o código aqui já prepara o navegador para receber.
@@ -320,8 +320,8 @@ const AdminDashboard = () => {
 
         const options: ExtendedNotificationOptions = {
             body: booking.message || `${booking.name} agendou para ${dateStr}`,
-            icon: '/connect-icon-192.png',
-            badge: '/connect-icon-192.png',
+            icon: '/notification-icon.jpg',
+            badge: '/notification-icon.jpg',
             tag: booking.id || 'new-booking',
             vibrate: [500, 110, 500, 110, 450, 110, 200, 110, 170, 40, 450, 110, 200, 110, 170, 40, 500],
             requireInteraction: true,
