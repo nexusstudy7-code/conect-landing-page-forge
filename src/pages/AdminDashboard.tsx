@@ -137,23 +137,29 @@ const AdminDashboard = () => {
         };
     }, []);
 
-    // Função para mostrar notificação nativa no sistema/celular
-    const showNativeNotification = (booking: Booking) => {
-        if ('Notification' in window && Notification.permission === 'granted') {
-            const notification = new Notification('Novo Agendamento Connect!', {
-                body: `${booking.name} agendou para ${new Date(booking.date).toLocaleDateString('pt-BR')}`,
-                icon: '/favicon.jpg', // Caminho do ícone
-                badge: '/favicon.jpg',
-                tag: 'new-booking', // Evita duplicatas
-                requireInteraction: true // Deixa na barra até o usuário agir
-            });
+    // Função para mostrar notificação nativa no sistema/celular (versão PWA/Mobile robusta)
+    const showNativeNotification = async (booking: Booking) => {
+        if (!('Notification' in window) || Notification.permission !== 'granted') return;
 
-            notification.onclick = () => {
-                window.focus();
-                handleTabChange('bookings');
-                fetchBookings();
-                notification.close();
-            };
+        const title = 'Novo Agendamento Connect!';
+        const options = {
+            body: `${booking.name} agendou para ${new Date(booking.date).toLocaleDateString('pt-BR')}`,
+            icon: '/favicon.jpg',
+            badge: '/favicon.jpg',
+            tag: 'new-booking',
+            vibrate: [200, 100, 200], // Vibração no celular
+            data: {
+                url: window.location.origin + '/admin'
+            }
+        };
+
+        // Tentar via Service Worker (necessário para Mobile/PWA)
+        if ('serviceWorker' in navigator) {
+            const registration = await navigator.serviceWorker.ready;
+            registration.showNotification(title, options);
+        } else {
+            // Fallback para desktop se SW não disponível
+            new Notification(title, options);
         }
     };
 
