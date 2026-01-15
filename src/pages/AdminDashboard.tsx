@@ -41,6 +41,21 @@ const AdminDashboard = () => {
     const [clients, setClients] = useState<Client[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>(
+        typeof window !== 'undefined' ? Notification.permission : 'default'
+    );
+
+    const requestNotificationPermission = async () => {
+        if ('Notification' in window) {
+            const permission = await Notification.requestPermission();
+            setNotificationPermission(permission);
+            if (permission === 'granted') {
+                toast.success('Notificações ativadas!', {
+                    description: 'Você receberá alertas de novos agendamentos.'
+                });
+            }
+        }
+    };
 
     // Fetch bookings from Supabase
     const fetchBookings = async () => {
@@ -545,6 +560,27 @@ const AdminDashboard = () => {
                                             Visualize e gerencie todos os agendamentos de gravações e reuniões.
                                         </p>
                                     </div>
+
+                                    {/* Notification Banner for Mobile */}
+                                    {notificationPermission !== 'granted' && (
+                                        <div className="mb-6 bg-yellow-500/10 border border-yellow-500/30 p-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                                            <div className="flex items-center gap-3">
+                                                <div className="w-10 h-10 rounded-full bg-yellow-500/20 flex items-center justify-center text-yellow-500 flex-shrink-0">
+                                                    <Phone size={20} />
+                                                </div>
+                                                <div>
+                                                    <p className="font-medium text-sm">Notificações Desativadas</p>
+                                                    <p className="text-xs text-muted-foreground">Ative para receber alertas de novos clientes no celular.</p>
+                                                </div>
+                                            </div>
+                                            <button
+                                                onClick={requestNotificationPermission}
+                                                className="w-full sm:w-auto px-6 py-2 bg-yellow-500 text-black text-xs font-bold uppercase tracking-wider hover:bg-yellow-400 transition-colors"
+                                            >
+                                                Ativar Notificações
+                                            </button>
+                                        </div>
+                                    )}
 
                                     {/* Filters */}
                                     <div className="mb-8 space-y-4">
