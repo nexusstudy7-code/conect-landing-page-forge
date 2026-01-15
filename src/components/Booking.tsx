@@ -74,7 +74,7 @@ const Booking = () => {
 
         try {
             // Salvar no Supabase
-            const { data, error } = await supabase
+            const { error } = await supabase
                 .from('bookings')
                 .insert({
                     name: formData.name,
@@ -85,9 +85,7 @@ const Booking = () => {
                     time: formData.time,
                     message: formData.message || null,
                     status: 'pending',
-                })
-                .select()
-                .single();
+                });
 
             if (error) throw error;
 
