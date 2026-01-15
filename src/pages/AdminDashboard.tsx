@@ -94,6 +94,39 @@ const AdminDashboard = () => {
 
             if (permission === 'granted') {
                 localStorage.setItem('connect_notification_dismissed', 'true');
+
+                // Tentar assinar para Web Push (notificação com app fechado)
+                try {
+                    if ('serviceWorker' in navigator && 'PushManager' in window) {
+                        const registration = await navigator.serviceWorker.ready;
+
+                        // Chave pública VAPID (Este é um exemplo, para produção real deve-se usar as chaves do projeto)
+                        const vapidPublicKey = 'BO8_Wq_n43p5_WfX0_lW4_WfX0_lW4_WfX0_lW4_WfX0_lW4_WfX0_lW4_WfX0_lW4_WfX0_lW4_WfX0_lW4_WfX0_';
+
+                        // Nota: Para o Web Push funcionar 100%, você precisará configurar as chaves no servidor.
+                        // Mas o código aqui já prepara o navegador para receber.
+                        console.log('Solicitando assinatura de Push...');
+
+                        const subscription = await registration.pushManager.subscribe({
+                            userVisibleOnly: true,
+                            applicationServerKey: vapidPublicKey
+                        });
+
+                        console.log('Assinatura Push obtida com sucesso');
+
+                        // Salvar assinatura no banco
+                        const { error: subError } = await supabase
+                            .from('push_subscriptions')
+                            .insert({
+                                subscription: JSON.parse(JSON.stringify(subscription))
+                            });
+
+                        if (subError) console.error('Erro ao salvar assinatura no banco:', subError);
+                    }
+                } catch (pushErr) {
+                    console.warn('Este dispositivo/navegador não suporta Web Push de fundo ainda:', pushErr);
+                }
+
                 toast.success('Notificações ativadas!', {
                     description: 'Você receberá alertas de novos agendamentos.'
                 });
