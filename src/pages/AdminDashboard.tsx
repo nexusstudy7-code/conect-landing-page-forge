@@ -320,8 +320,8 @@ const AdminDashboard = () => {
 
         const options: ExtendedNotificationOptions = {
             body: booking.message || `${booking.name} agendou para ${dateStr}`,
-            icon: '/notification-icon.jpg',
-            badge: '/notification-icon.jpg',
+            icon: '/notification-icon.png',
+            badge: '/notification-icon.png',
             tag: booking.id || 'new-booking',
             vibrate: [500, 110, 500, 110, 450, 110, 200, 110, 170, 40, 450, 110, 200, 110, 170, 40, 500],
             requireInteraction: true,
