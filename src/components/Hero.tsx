@@ -73,7 +73,7 @@ const Hero = () => {
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-6 relative z-20 pt-36 md:pt-32">
+      <div className="container mx-auto px-6 relative z-20 pt-20 md:pt-32">
         <motion.div
           className="max-w-4xl"
           variants={containerVariants}
