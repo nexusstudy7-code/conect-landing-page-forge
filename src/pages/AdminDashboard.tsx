@@ -122,8 +122,8 @@ const AdminDashboard = () => {
                     if ('serviceWorker' in navigator && 'PushManager' in window) {
                         const registration = await navigator.serviceWorker.ready;
 
-                        // Chave pública VAPID (Este é um exemplo, para produção real deve-se usar as chaves do projeto)
-                        const vapidPublicKey = 'BI03eeSr14b_UIiC_mpq7TD9zYxHE2TSo-eIdc-EbrRetgiS9W_HpVH1MlqAXGm6m5zEYb-pGVIPp2XhwDytNM0';
+                        // Chave pública VAPID (gerada com web-push)
+                        const vapidPublicKey = 'BCVnjfuNc0lccnNYnAYXurUnTxoBwY_tOJwaYFy18PfhpFjTbPPosOjLOaiePbeB9smJGjB4-oleybJp3TLS_UQ';
 
                         // Nota: Para o Web Push funcionar 100%, você precisará configurar as chaves no servidor.
                         // Mas o código aqui já prepara o navegador para receber.

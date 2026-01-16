@@ -88,8 +88,8 @@ self.addEventListener('push', (event) => {
         const title = data.title || 'Novo Agendamento Connect!';
         const options = {
             body: data.body || 'Você tem um novo agendamento no painel.',
-            icon: '/notification-icon.jpg',
-            badge: '/notification-icon.jpg',
+            icon: '/notification-icon.png',
+            badge: '/notification-icon.png',
             tag: 'new-booking',
             vibrate: [500, 110, 500, 110, 450, 110, 200, 110, 170, 40, 450, 110, 200, 110, 170, 40, 500],
             data: {
