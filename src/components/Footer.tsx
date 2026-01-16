@@ -1,6 +1,6 @@
 import { Instagram, Linkedin, Mail, Plug } from 'lucide-react';
 import { motion } from 'framer-motion';
-import logo from '@/assets/connect-logo.png';
+import logo from '@/assets/connect-logo.jpg';
 
 const socialLinks = [
   { icon: Instagram, href: 'https://www.instagram.com/sejaconect?igsh=YTEyamp5NTBhb2x0', label: 'Instagram' },

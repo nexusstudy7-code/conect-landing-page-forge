@@ -9,7 +9,7 @@ import {
     DialogHeader,
     DialogTitle,
 } from "@/components/ui/dialog";
-import logo from '@/assets/connect-logo.png';
+import logo from '@/assets/connect-logo.jpg';
 import { TRANSITIONS, DURATION, EASING, TRANSITION_CLASSES } from '@/lib/animations';
 import { supabase } from '@/lib/supabase/client';
 import type { Database, Json } from '@/lib/supabase/types';
