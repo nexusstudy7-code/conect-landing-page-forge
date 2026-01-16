@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Lock, Mail, ArrowRight, Plug } from 'lucide-react';
-import logo from '@/assets/connect-logo.jpg';
+import logo from '@/assets/connect-logo.png';
 import { TRANSITIONS, DURATION, EASING } from '@/lib/animations';
 import { supabase } from '@/lib/supabase/client';
 
