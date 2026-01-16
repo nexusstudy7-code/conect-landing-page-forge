@@ -87,13 +87,13 @@ const Header = () => {
       initial={{ y: -100 }}
       animate={{ y: isHidden ? -100 : 0 }}
       transition={TRANSITIONS.smooth}
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-slow ease-premium ${isScrolled ? 'bg-background/95 py-4' : 'py-6 bg-transparent'
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-slow ease-premium ${isScrolled ? 'bg-background/95 py-1' : 'py-2 bg-transparent'
         }`}
     >
       <div className="container mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
         <a href={location.pathname === '/' ? '#inicio' : '/'} className="flex items-center gap-3">
-          <img src={logo} alt="Connect" className="h-16 w-16 object-cover rounded-full" />
+          <img src={logo} alt="Connect" className="h-10 w-10 object-cover rounded-full" />
           <span className="font-display text-2xl tracking-widest">CONNECT</span>
         </a>
 
