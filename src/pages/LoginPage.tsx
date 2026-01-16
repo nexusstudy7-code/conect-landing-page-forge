@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Lock, Mail, ArrowRight, Plug } from 'lucide-react';
+import { Lock, Mail, ArrowRight, Plug, X } from 'lucide-react';
 import logo from '@/assets/connect-logo.jpg';
 import { TRANSITIONS, DURATION, EASING } from '@/lib/animations';
 import { supabase } from '@/lib/supabase/client';
@@ -174,10 +174,10 @@ const LoginPage = () => {
                                     type="checkbox"
                                     id="remember"
                                     name="remember"
-                                    className="peer w-5 h-5 appearance-none rounded border-2 border-foreground/30 bg-background checked:bg-foreground checked:border-foreground transition-all cursor-pointer"
+                                    className="peer w-5 h-5 appearance-none rounded border-2 border-white/50 bg-white checked:bg-white checked:border-white transition-all cursor-pointer"
                                     defaultChecked
                                 />
-                                <Lock className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3 h-3 text-background scale-0 peer-checked:scale-100 transition-transform pointer-events-none" />
+                                <X className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-3.5 h-3.5 text-black scale-0 peer-checked:scale-100 transition-transform pointer-events-none" />
                             </div>
                             <label htmlFor="remember" className="text-sm text-muted-foreground uppercase tracking-[0.1em] cursor-pointer group-hover:text-foreground transition-colors">
                                 Manter conectado

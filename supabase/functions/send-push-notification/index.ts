@@ -114,7 +114,7 @@ Deno.serve(async (req: Request) => {
 
         const payload: NotificationPayload = {
             title: 'Novo Agendamento Connect! 🔌',
-            body: `${record.name || 'Cliente'} agendou para ${dateStr}`,
+            body: `${record.name || 'Cliente'} agendou para ${dateStr}${record.message ? `\n\nObs: ${record.message}` : ''}`,
             icon: '/notification-icon.png',
             badge: '/notification-icon.png',
             url: '/admin',
