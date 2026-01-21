@@ -1229,7 +1229,7 @@ const AdminDashboard = () => {
                                                     ? `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(dayNumber).padStart(2, '0')}`
                                                     : '';
 
-                                                const dayBookings = bookings.filter(b => b.date === dateStr && b.status === 'confirmed');
+                                                const dayBookings = bookings.filter(b => b.date === dateStr && b.status !== 'completed');
                                                 const hasRecording = dayBookings.some(b => b.type === 'recording');
                                                 const hasMeeting = dayBookings.some(b => b.type === 'meeting');
 
@@ -1290,12 +1290,12 @@ const AdminDashboard = () => {
                                                 </DialogHeader>
 
                                                 <div className="space-y-4 mt-4">
-                                                    {bookings.filter(b => b.date === selectedDate).length === 0 ? (
+                                                    {bookings.filter(b => b.date === selectedDate && b.status !== 'completed').length === 0 ? (
                                                         <p className="text-muted-foreground text-center py-8">
                                                             Nenhum agendamento para este dia.
                                                         </p>
                                                     ) : (
-                                                        bookings.filter(b => b.date === selectedDate).map(booking => (
+                                                        bookings.filter(b => b.date === selectedDate && b.status !== 'completed').map(booking => (
                                                             <div key={booking.id} className="bg-background border border-foreground/5 p-4 rounded-lg relative overflow-hidden group">
                                                                 <div className={`absolute left-0 top-0 bottom-0 w-1 ${booking.type === 'recording' ? 'bg-red-500' : 'bg-blue-500'}`} />
 
@@ -1332,6 +1332,34 @@ const AdminDashboard = () => {
                                                                             "{booking.message}"
                                                                         </div>
                                                                     )}
+
+                                                                    {/* Action Buttons */}
+                                                                    <div className="mt-3 flex gap-2">
+                                                                        {booking.status === 'pending' && (
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    handleConfirmBooking(booking.id);
+                                                                                    setIsDialogOpen(false);
+                                                                                }}
+                                                                                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-green-500/10 hover:bg-green-500/20 text-green-500 border border-green-500/30 rounded text-xs uppercase tracking-wider transition-colors"
+                                                                            >
+                                                                                <CheckCircle size={14} />
+                                                                                Aceitar
+                                                                            </button>
+                                                                        )}
+                                                                        {(booking.status === 'pending' || booking.status === 'confirmed') && (
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    handleCompleteBooking(booking.id);
+                                                                                    setIsDialogOpen(false);
+                                                                                }}
+                                                                                className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-500 border border-blue-500/30 rounded text-xs uppercase tracking-wider transition-colors"
+                                                                            >
+                                                                                <CheckCircle size={14} />
+                                                                                Concluir
+                                                                            </button>
+                                                                        )}
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         ))

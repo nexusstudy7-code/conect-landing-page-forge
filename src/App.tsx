@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import ScrollToTop from "./components/ScrollToTop";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import ChatButton from "./components/ChatButton";
 
 const Index = lazy(() => import("./pages/Index"));
 const AgendaPage = lazy(() => import("./pages/AgendaPage"));
@@ -29,6 +30,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <ScrollToTop />
+        <ChatButton />
         <Suspense fallback={<LoadingFallback />}>
           <Routes>
             <Route path="/" element={<Index />} />
