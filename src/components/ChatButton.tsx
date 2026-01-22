@@ -159,7 +159,6 @@ const ChatButton = () => {
                                 </div>
                                 <div>
                                     <h3 className="text-sm font-display tracking-widest uppercase">Connect AI Agent</h3>
-                                    <p className="text-[10px] text-muted-foreground uppercase tracking-tighter">Powered by n8n</p>
                                 </div>
                             </div>
                             <button
