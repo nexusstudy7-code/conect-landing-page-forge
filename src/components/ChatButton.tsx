@@ -90,6 +90,9 @@ const ChatButton = () => {
                 body: JSON.stringify({
                     message: currentInput,
                     sessionId: sessionId,
+                    currentDate: new Date().toLocaleDateString('pt-BR'),
+                    currentDay: new Date().toLocaleTimeString('pt-BR', { weekday: 'long' }),
+                    timestamp: new Date().toISOString()
                 }),
             });
 
