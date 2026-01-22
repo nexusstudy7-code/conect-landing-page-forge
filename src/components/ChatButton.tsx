@@ -1,21 +1,32 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X, Send } from 'lucide-react';
+import { MessageSquare, X, Send, Loader2, Calendar, CheckCircle } from 'lucide-react';
 
 interface Message {
-    id: number;
+    id: string;
     text: string;
     sender: 'user' | 'bot';
     timestamp: Date;
+    action?: string;
 }
+
+const N8N_WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL;
 
 const ChatButton = () => {
     const [isOpen, setIsOpen] = useState(false);
     const [inputValue, setInputValue] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const [sessionId, setSessionId] = useState('');
+
+    useEffect(() => {
+        // Gera um ID único baseado no tempo + string aleatória para evitar duplicidade
+        const uniqueId = `session_${Date.now()}_${Math.random().toString(36).substring(7)}`;
+        setSessionId(uniqueId);
+    }, []);
     const [messages, setMessages] = useState<Message[]>([
         {
-            id: 1,
-            text: 'Olá! Como podemos ajudar você hoje? Seja bem-vindo à Connect.',
+            id: '1',
+            text: 'Olá! Sou seu assistente Connect. Como posso ajudar com informações sobre a agência ou agendamentos hoje?',
             sender: 'bot',
             timestamp: new Date(),
         },
@@ -31,32 +42,100 @@ const ChatButton = () => {
         if (isOpen) {
             scrollToBottom();
         }
-    }, [isOpen, messages]);
+    }, [isOpen, messages, isLoading]);
 
-    const handleSend = (e?: React.FormEvent) => {
+    const handleAction = (action: string) => {
+        if (action === 'open_booking') {
+            const bookingSection = document.getElementById('agenda');
+            if (bookingSection) {
+                bookingSection.scrollIntoView({ behavior: 'smooth' });
+                setIsOpen(false);
+            }
+        }
+
+        if (action === 'booking_saved') {
+            // Poderia disparar um confetti ou som de sucesso aqui
+            console.log('Agendamento salvo com sucesso pelo Agente AI!');
+        }
+    };
+
+    const handleSend = async (e?: React.FormEvent) => {
         e?.preventDefault();
-        if (!inputValue.trim()) return;
+        if (!inputValue.trim() || isLoading) return;
 
+        const currentInput = inputValue;
         const userMessage: Message = {
-            id: Date.now(),
-            text: inputValue,
+            id: Date.now().toString(),
+            text: currentInput,
             sender: 'user',
             timestamp: new Date(),
         };
 
         setMessages((prev) => [...prev, userMessage]);
         setInputValue('');
+        setIsLoading(true);
 
-        // Simulated Bot Response
-        setTimeout(() => {
+        try {
+            // Se o webhook não estiver configurado corretamente, avisar o usuário
+            if (!N8N_WEBHOOK_URL || N8N_WEBHOOK_URL.includes('seu-n8n')) {
+                throw new Error('WEBHOOK_NOT_CONFIGURED');
+            }
+
+            const response = await fetch(N8N_WEBHOOK_URL, {
+                method: 'POST',
+                mode: 'cors', // Garantir o modo CORS
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: currentInput,
+                    sessionId: sessionId,
+                }),
+            });
+
+            if (!response.ok) throw new Error('Network response was not ok');
+
+            const text = await response.text();
+            if (!text) throw new Error('EMPTY_RESPONSE');
+
+            const data = JSON.parse(text);
+
+            // n8n response format handling (assuming { output: string, action?: string })
             const botMessage: Message = {
-                id: Date.now() + 1,
-                text: 'Obrigado por sua mensagem! Um de nossos especialistas entrará em contato em breve através do seu canal de preferência.',
+                id: (Date.now() + 1).toString(),
+                text: data.output || data.message || 'Desculpe, tive um problema ao processar sua resposta.',
+                sender: 'bot',
+                timestamp: new Date(),
+                action: data.action
+            };
+
+            setMessages((prev) => [...prev, botMessage]);
+
+            if (data.action) {
+                handleAction(data.action);
+            }
+
+        } catch (error: any) {
+            console.error('Chat error:', error);
+
+            let errorMessage = 'Desculpe, ocorreu um erro na conexão. Por favor, tente novamente mais tarde.';
+
+            if (error.message === 'WEBHOOK_NOT_CONFIGURED') {
+                errorMessage = 'O agente de IA está sendo configurado. Por favor, configure o webhook no n8n para começar a conversar!';
+            } else if (error.message === 'EMPTY_RESPONSE' || error instanceof SyntaxError) {
+                errorMessage = 'O n8n não enviou uma resposta válida. Verifique o nó "Respond to Webhook"!';
+            }
+
+            const errorBotMessage: Message = {
+                id: (Date.now() + 1).toString(),
+                text: errorMessage,
                 sender: 'bot',
                 timestamp: new Date(),
             };
-            setMessages((prev) => [...prev, botMessage]);
-        }, 1000);
+            setMessages((prev) => [...prev, errorBotMessage]);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -67,7 +146,7 @@ const ChatButton = () => {
                         initial={{ opacity: 0, scale: 0.9, y: 20, transformOrigin: 'bottom right' }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="w-[320px] sm:w-[380px] h-[500px] bg-card border border-foreground/10 glass shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col rounded-[2rem] pointer-events-auto"
+                        className="w-[320px] sm:w-[380px] h-[550px] bg-card border border-foreground/10 glass shadow-[0_20px_50px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col rounded-[2rem] pointer-events-auto"
                     >
                         {/* Chat Header */}
                         <div className="p-6 border-b border-foreground/10 bg-foreground/[0.02] flex items-center justify-between">
@@ -79,8 +158,8 @@ const ChatButton = () => {
                                     <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-green-500 rounded-full border-2 border-card" />
                                 </div>
                                 <div>
-                                    <h3 className="text-sm font-display tracking-widest uppercase">Connect Chat</h3>
-                                    <p className="text-[10px] text-muted-foreground uppercase tracking-tighter">Online agora</p>
+                                    <h3 className="text-sm font-display tracking-widest uppercase">Connect AI Agent</h3>
+                                    <p className="text-[10px] text-muted-foreground uppercase tracking-tighter">Powered by n8n</p>
                                 </div>
                             </div>
                             <button
@@ -102,18 +181,44 @@ const ChatButton = () => {
                                     className={`flex ${msg.sender === 'user' ? 'justify-end' : 'justify-start'}`}
                                 >
                                     <div
-                                        className={`max-w-[85%] p-4 rounded-2xl text-[13px] leading-relaxed ${msg.sender === 'user'
-                                                ? 'bg-foreground text-background font-medium'
-                                                : 'bg-foreground/5 border border-foreground/10 text-foreground'
+                                        className={`max-w-[85%] p-4 rounded-2xl text-[13px] leading-relaxed relative ${msg.sender === 'user'
+                                            ? 'bg-foreground text-background font-medium'
+                                            : 'bg-foreground/5 border border-foreground/10 text-foreground'
                                             }`}
                                     >
                                         {msg.text}
+                                        {msg.action === 'open_booking' && (
+                                            <button
+                                                onClick={() => handleAction('open_booking')}
+                                                className="mt-3 flex items-center gap-2 bg-foreground/10 hover:bg-foreground/20 px-3 py-1.5 rounded-full text-[11px] transition-colors"
+                                            >
+                                                <Calendar size={12} />
+                                                Ir para agendamentos
+                                            </button>
+                                        )}
+                                        {msg.action === 'booking_saved' && (
+                                            <div className="mt-3 flex items-center gap-2 text-green-500 font-medium text-[11px] bg-green-500/10 px-3 py-1.5 rounded-full border border-green-500/20">
+                                                <CheckCircle size={12} />
+                                                Agendamento Confirmado
+                                            </div>
+                                        )}
                                         <div className={`text-[9px] mt-2 opacity-50 ${msg.sender === 'user' ? 'text-right' : 'text-left'}`}>
                                             {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                         </div>
                                     </div>
                                 </motion.div>
                             ))}
+                            {isLoading && (
+                                <motion.div
+                                    initial={{ opacity: 0, x: -10 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    className="flex justify-start"
+                                >
+                                    <div className="bg-foreground/5 border border-foreground/10 p-4 rounded-2xl">
+                                        <Loader2 size={16} className="animate-spin text-muted-foreground" />
+                                    </div>
+                                </motion.div>
+                            )}
                             <div ref={messagesEndRef} />
                         </div>
 
@@ -125,20 +230,18 @@ const ChatButton = () => {
                                     value={inputValue}
                                     onChange={(e) => setInputValue(e.target.value)}
                                     placeholder="Diga algo..."
-                                    className="w-full bg-foreground/5 border border-foreground/10 rounded-full px-5 py-3 text-sm focus:outline-none focus:border-foreground/30 transition-colors"
+                                    disabled={isLoading}
+                                    className="w-full bg-foreground/5 border border-foreground/10 rounded-full px-5 py-3 text-sm focus:outline-none focus:border-foreground/30 transition-colors disabled:opacity-50"
                                 />
                                 <button
                                     type="submit"
-                                    disabled={!inputValue.trim()}
+                                    disabled={!inputValue.trim() || isLoading}
                                     className="p-3 bg-foreground text-background rounded-full hover:opacity-90 transition-opacity disabled:opacity-50"
                                     aria-label="Enviar"
                                 >
                                     <Send size={18} />
                                 </button>
                             </div>
-                            <p className="text-[8px] text-center text-muted-foreground mt-3 uppercase tracking-[0.2em] opacity-40">
-                                Seja Referência, Seja Connect
-                            </p>
                         </form>
                     </motion.div>
                 )}
@@ -159,10 +262,8 @@ const ChatButton = () => {
                 whileTap={{ scale: 0.95 }}
                 aria-label={isOpen ? "Fechar chat" : "Abrir chat"}
             >
-                {/* Glow Effect */}
                 <div className="absolute inset-0 bg-foreground/10 rounded-full blur-xl group-hover:bg-foreground/20 transition-colors duration-500" />
 
-                {/* Icon Toggle */}
                 <AnimatePresence mode="wait">
                     {isOpen ? (
                         <motion.div
@@ -187,14 +288,11 @@ const ChatButton = () => {
                     )}
                 </AnimatePresence>
 
-                {/* The Connection Node (The second "Bolinha") - Only shown when closed */}
                 {!isOpen && (
                     <div className="absolute top-3 right-3 w-3 h-3 bg-foreground rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)] z-20">
                         <div className="absolute inset-0 bg-foreground rounded-full animate-ping opacity-75" />
                     </div>
                 )}
-
-                {/* Border Glow Line */}
                 <div className="absolute inset-0 border border-foreground/5 rounded-full" />
             </motion.button>
         </div>
