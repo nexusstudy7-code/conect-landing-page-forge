@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MessageSquare, X, Send, Loader2, Calendar, CheckCircle } from 'lucide-react';
+import { MessageSquare, X, Send, Loader2, Calendar, CheckCircle, Instagram, Phone } from 'lucide-react';
 
 interface Message {
     id: string;
@@ -60,6 +60,14 @@ const ChatButton = () => {
             }
         }
 
+        if (action === 'open_whatsapp') {
+            window.open('https://wa.me/5584988156694', '_blank');
+        }
+
+        if (action === 'open_instagram') {
+            window.open('https://www.instagram.com/sejaconect?igsh=YTEyamp5NTBhb2x0', '_blank');
+        }
+
         if (action === 'booking_saved') {
             // Poderia disparar um confetti ou som de sucesso aqui
             console.log('Agendamento salvo com sucesso pelo Agente AI!');
@@ -110,13 +118,25 @@ const ChatButton = () => {
 
             const data = JSON.parse(text);
 
+            // Detecta ações baseado na pergunta do usuário caso o n8n não retorne
+            const detectAction = (text: string): string | undefined => {
+                const lowerText = text.toLowerCase();
+                if (lowerText.includes('whatsapp') || lowerText.includes('wpp') || lowerText.includes('whats') || lowerText.includes('zap') || lowerText.includes('número') || lowerText.includes('numero') || lowerText.includes('telefone')) {
+                    return 'open_whatsapp';
+                }
+                if (lowerText.includes('instagram') || lowerText.includes('insta')) {
+                    return 'open_instagram';
+                }
+                return undefined;
+            };
+
             // n8n response format handling (assuming { output: string, action?: string })
             const botMessage: Message = {
                 id: (Date.now() + 1).toString(),
                 text: data.output || data.message || 'Desculpe, tive um problema ao processar sua resposta.',
                 sender: 'bot',
                 timestamp: new Date(),
-                action: data.action
+                action: data.action || detectAction(currentInput)
             };
 
             setMessages((prev) => [...prev, botMessage]);
@@ -210,6 +230,24 @@ const ChatButton = () => {
                                                 <CheckCircle size={12} />
                                                 Agendamento Confirmado
                                             </div>
+                                        )}
+                                        {msg.action === 'open_whatsapp' && (
+                                            <button
+                                                onClick={() => handleAction('open_whatsapp')}
+                                                className="mt-3 flex items-center gap-2 bg-green-500/10 hover:bg-green-500/20 text-green-500 border border-green-500/20 px-3 py-1.5 rounded-full text-[11px] transition-colors"
+                                            >
+                                                <Phone size={12} />
+                                                Conversar no WhatsApp
+                                            </button>
+                                        )}
+                                        {msg.action === 'open_instagram' && (
+                                            <button
+                                                onClick={() => handleAction('open_instagram')}
+                                                className="mt-3 flex items-center gap-2 bg-pink-500/10 hover:bg-pink-500/20 text-pink-500 border border-pink-500/20 px-3 py-1.5 rounded-full text-[11px] transition-colors"
+                                            >
+                                                <Instagram size={12} />
+                                                Seguir no Instagram
+                                            </button>
                                         )}
                                         <div className={`text-[9px] mt-2 opacity-50 ${msg.sender === 'user' ? 'text-right' : 'text-left'}`}>
                                             {msg.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
