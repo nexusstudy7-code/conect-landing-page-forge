@@ -9,7 +9,6 @@ interface Message {
     sender: 'user' | 'bot';
     timestamp: Date;
     action?: string;
-    audioUrl?: string; // URL do áudio gerado pelo n8n
 }
 
 const N8N_WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL;
@@ -131,14 +130,13 @@ const ChatButton = () => {
                 return undefined;
             };
 
-            // n8n response format handling (assuming { output: string, action?: string, audioUrl?: string })
+            // n8n response format handling (assuming { output: string, action?: string })
             const botMessage: Message = {
                 id: (Date.now() + 1).toString(),
                 text: data.output || data.message || 'Desculpe, tive um problema ao processar sua resposta.',
                 sender: 'bot',
                 timestamp: new Date(),
-                action: data.action || detectAction(currentInput),
-                audioUrl: data.audioUrl // URL do áudio se o n8n retornar
+                action: data.action || detectAction(currentInput)
             };
 
             setMessages((prev) => [...prev, botMessage]);
@@ -218,26 +216,6 @@ const ChatButton = () => {
                                             }`}
                                     >
                                         {msg.text}
-
-                                        {/* Audio Player - se houver audioUrl */}
-                                        {msg.audioUrl && msg.sender === 'bot' && (
-                                            <div className="mt-3">
-                                                <audio
-                                                    controls
-                                                    className="w-full h-10 rounded-lg"
-                                                    style={{
-                                                        filter: 'invert(0.9) hue-rotate(180deg)',
-                                                        maxWidth: '100%'
-                                                    }}
-                                                >
-                                                    <source src={msg.audioUrl} type="audio/mpeg" />
-                                                    <source src={msg.audioUrl} type="audio/wav" />
-                                                    <source src={msg.audioUrl} type="audio/ogg" />
-                                                    Seu navegador não suporta o elemento de áudio.
-                                                </audio>
-                                            </div>
-                                        )}
-
                                         {msg.action === 'open_booking' && (
                                             <button
                                                 onClick={() => handleAction('open_booking')}
