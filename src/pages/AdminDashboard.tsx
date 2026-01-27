@@ -512,6 +512,15 @@ const AdminDashboard = () => {
         // if (!confirm(`Deseja converter ${booking.name} em um cliente fiel e migrar o histórico?`)) return;
 
         try {
+            // Formatar telefone se vir apenas números
+            let formattedPhone = booking.phone;
+            const digits = booking.phone.replace(/\D/g, '');
+            if (digits.length === 11) {
+                formattedPhone = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+            } else if (digits.length === 10) {
+                formattedPhone = `(${digits.slice(0, 2)}) ${digits.slice(2, 6)}-${digits.slice(6)}`;
+            }
+
             // Verifica se já existe
             const { data: existingClient } = await supabase
                 .from('clients')
@@ -530,7 +539,7 @@ const AdminDashboard = () => {
                 .insert({
                     name: booking.name,
                     email: booking.email,
-                    phone: booking.phone,
+                    phone: formattedPhone, // Usa o telefone formatado
                     last_booking: booking.date,
                 });
 
@@ -975,8 +984,7 @@ const AdminDashboard = () => {
                                                                     )}
 
                                                                     {/* Convert to Client Button */}
-                                                                    {/* Convert to Client Button */}
-                                                                    {booking.status?.toLowerCase() === 'completed' && (() => {
+                                                                    {(booking.status?.toLowerCase() === 'completed' || booking.status?.toLowerCase() === 'confirmed') && (() => {
                                                                         const isClient = clients.some(c => c.email === booking.email || c.phone === booking.phone);
                                                                         return (
                                                                             <button

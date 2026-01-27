@@ -17,7 +17,7 @@ export default defineConfig({
     port: 8080,
     proxy: {
       '/n8n-api': {
-        target: 'https://gustaa1301.app.n8n.cloud',
+        target: 'http://localhost:5678',
         changeOrigin: true,
         secure: true,
         rewrite: (path) => path.replace(/^\/n8n-api/, ''),

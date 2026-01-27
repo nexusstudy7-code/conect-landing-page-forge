@@ -140,10 +140,34 @@ const Booking = () => {
     };
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        setFormData({
-            ...formData,
-            [e.target.name]: e.target.value,
-        });
+        const { name, value } = e.target;
+
+        if (name === 'phone') {
+            // Máscara simples para telefone: (XX) XXXXX-XXXX
+            const digits = value.replace(/\D/g, '');
+            let formattedValue = digits;
+
+            if (digits.length <= 11) {
+                if (digits.length > 2) {
+                    formattedValue = `(${digits.slice(0, 2)}) ${digits.slice(2)}`;
+                }
+                if (digits.length > 7) {
+                    formattedValue = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7)}`;
+                }
+            } else {
+                formattedValue = `(${digits.slice(0, 2)}) ${digits.slice(2, 7)}-${digits.slice(7, 11)}`;
+            }
+
+            setFormData({
+                ...formData,
+                phone: formattedValue,
+            });
+        } else {
+            setFormData({
+                ...formData,
+                [name]: value,
+            });
+        }
     };
 
     return (
