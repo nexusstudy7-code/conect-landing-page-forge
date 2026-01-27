@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Send, Loader2, Calendar, CheckCircle } from 'lucide-react';
 
@@ -13,7 +14,13 @@ interface Message {
 const N8N_WEBHOOK_URL = import.meta.env.VITE_N8N_WEBHOOK_URL;
 
 const ChatButton = () => {
+    const location = useLocation();
     const [isOpen, setIsOpen] = useState(false);
+
+    // Don't show the chat in the admin area or login page
+    if (location.pathname.startsWith('/admin') || location.pathname === '/login') {
+        return null;
+    }
     const [inputValue, setInputValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const [sessionId, setSessionId] = useState('');
