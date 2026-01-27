@@ -1,0 +1,379 @@
+{
+    "name": "Connect AI Chat com Áudio",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "chat",
+                "responseMode": "responseNode",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 2.1,
+            "position": [
+                -96,
+                96
+            ],
+            "id": "webhook-node",
+            "name": "Webhook"
+        },
+        {
+            "parameters": {
+                "sessionKey": "={{ $('Webhook').item.json.body.sessionId }}",
+                "contextWindowLength": 10
+            },
+            "id": "memory-node",
+            "name": "Window Buffer Memory",
+            "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+            "typeVersion": 1.1,
+            "position": [
+                240,
+                320
+            ]
+        },
+        {
+            "parameters": {
+                "promptType": "define",
+                "text": "={{ $json.body.message }}",
+                "options": {
+                    "systemMessage": "=# [Suas instruções da Connect AI aqui]"
+                }
+            },
+            "type": "@n8n/n8n-nodes-langchain.agent",
+            "typeVersion": 3.1,
+            "position": [
+                208,
+                96
+            ],
+            "id": "ai-agent-node",
+            "name": "AI Agent"
+        },
+        {
+            "parameters": {
+                "model": "llama-3.3-70b-versatile",
+                "options": {}
+            },
+            "type": "@n8n/n8n-nodes-langchain.lmChatGroq",
+            "typeVersion": 1,
+            "position": [
+                48,
+                304
+            ],
+            "id": "groq-model-node",
+            "name": "Groq Chat Model"
+        },
+        {
+            "parameters": {
+                "descriptionType": "manual",
+                "toolDescription": "Salva um novo agendamento no banco de dados.",
+                "tableId": "bookings",
+                "fieldsUi": {
+                    "fieldValues": [
+                        {
+                            "fieldId": "name",
+                            "fieldValue": "={{ $fromAI('name', 'Nome completo do usuário', 'string') }}"
+                        },
+                        {
+                            "fieldId": "email",
+                            "fieldValue": "={{ $fromAI('email', 'Email do usuário', 'string') }}"
+                        },
+                        {
+                            "fieldId": "phone",
+                            "fieldValue": "={{ $fromAI('phone', 'Telefone do usuário', 'string') }}"
+                        },
+                        {
+                            "fieldId": "type",
+                            "fieldValue": "={{ $fromAI('type', 'Tipo: recording ou meeting', 'string') }}"
+                        },
+                        {
+                            "fieldId": "date",
+                            "fieldValue": "={{ $fromAI('date', 'Data YYYY-MM-DD', 'string') }}"
+                        },
+                        {
+                            "fieldId": "time",
+                            "fieldValue": "={{ $fromAI('time', 'Hora HH:mm', 'string') }}"
+                        }
+                    ]
+                }
+            },
+            "type": "n8n-nodes-base.supabaseTool",
+            "typeVersion": 1,
+            "position": [
+                576,
+                336
+            ],
+            "id": "insert-booking-node",
+            "name": "insert_booking"
+        },
+        {
+            "parameters": {
+                "jsCode": "// Lógica para decidir se deve enviar áudio\nconst output = $input.item.json.output;\nconst messageCount = $input.item.json.messageCount || 0;\n\n// Estratégia: Alternar entre texto e áudio\nconst shouldSendAudio = messageCount % 2 === 1;\n\n// OU: Áudio apenas em confirmações importantes\n// const shouldSendAudio = output.includes('Tudo pronto') || output.includes('confirmado');\n\n// OU: Áudio em mensagens longas\n// const shouldSendAudio = output.length > 200;\n\nreturn {\n  json: {\n    output: output,\n    shouldSendAudio: shouldSendAudio,\n    action: output.includes('Tudo pronto') || output.includes('agendamento foi confirmado') ? 'booking_saved' : null\n  }\n};"
+            },
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                400,
+                96
+            ],
+            "id": "decision-logic-node",
+            "name": "Decisão de Áudio"
+        },
+        {
+            "parameters": {
+                "conditions": {
+                    "boolean": [
+                        {
+                            "value1": "={{ $json.shouldSendAudio }}",
+                            "value2": true
+                        }
+                    ]
+                }
+            },
+            "type": "n8n-nodes-base.if",
+            "typeVersion": 2,
+            "position": [
+                560,
+                96
+            ],
+            "id": "if-node",
+            "name": "Enviar Áudio?"
+        },
+        {
+            "parameters": {
+                "method": "POST",
+                "url": "https://api.elevenlabs.io/v1/text-to-speech/21m00Tcm4TlvDq8ikWAM/stream",
+                "authentication": "genericCredentialType",
+                "genericAuthType": "httpHeaderAuth",
+                "sendHeaders": true,
+                "headerParameters": {
+                    "parameters": [
+                        {
+                            "name": "Content-Type",
+                            "value": "application/json"
+                        }
+                    ]
+                },
+                "sendBody": true,
+                "bodyParameters": {
+                    "parameters": [
+                        {
+                            "name": "text",
+                            "value": "={{ $json.output }}"
+                        },
+                        {
+                            "name": "model_id",
+                            "value": "eleven_multilingual_v2"
+                        },
+                        {
+                            "name": "voice_settings",
+                            "value": "={{ { \"stability\": 0.5, \"similarity_boost\": 0.75 } }}"
+                        }
+                    ]
+                },
+                "options": {
+                    "response": {
+                        "response": {
+                            "responseFormat": "file"
+                        }
+                    }
+                }
+            },
+            "type": "n8n-nodes-base.httpRequest",
+            "typeVersion": 4.2,
+            "position": [
+                720,
+                0
+            ],
+            "id": "elevenlabs-tts-node",
+            "name": "ElevenLabs TTS",
+            "credentials": {
+                "httpHeaderAuth": {
+                    "id": "elevenlabs-credentials",
+                    "name": "ElevenLabs API"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "operation": "upload",
+                "bucketName": "chat-audios",
+                "fileName": "={{ 'audio_' + Date.now() + '.mp3' }}",
+                "binaryData": true,
+                "options": {
+                    "contentType": "audio/mpeg"
+                }
+            },
+            "type": "n8n-nodes-base.supabase",
+            "typeVersion": 1,
+            "position": [
+                880,
+                0
+            ],
+            "id": "upload-audio-node",
+            "name": "Upload para Supabase Storage"
+        },
+        {
+            "parameters": {
+                "jsCode": "// Gera URL pública do áudio\nconst fileName = $input.item.json.fileName;\nconst supabaseUrl = 'https://lqgpdsrntfwsjgxuxosa.supabase.co';\nconst bucketName = 'chat-audios';\n\nconst audioUrl = `${supabaseUrl}/storage/v1/object/public/${bucketName}/${fileName}`;\n\nreturn {\n  json: {\n    output: $('Decisão de Áudio').item.json.output,\n    action: $('Decisão de Áudio').item.json.action,\n    audioUrl: audioUrl\n  }\n};"
+            },
+            "type": "n8n-nodes-base.code",
+            "typeVersion": 2,
+            "position": [
+                1040,
+                0
+            ],
+            "id": "generate-url-node",
+            "name": "Gerar URL do Áudio"
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ $json }}",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.5,
+            "position": [
+                1200,
+                0
+            ],
+            "id": "respond-with-audio-node",
+            "name": "Respond (Com Áudio)"
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={{ { \"output\": $('Decisão de Áudio').item.json.output, \"action\": $('Decisão de Áudio').item.json.action } }}",
+                "options": {}
+            },
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1.5,
+            "position": [
+                1200,
+                192
+            ],
+            "id": "respond-text-only-node",
+            "name": "Respond (Só Texto)"
+        }
+    ],
+    "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "AI Agent",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Window Buffer Memory": {
+            "ai_memory": [
+                [
+                    {
+                        "node": "AI Agent",
+                        "type": "ai_memory",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "AI Agent": {
+            "main": [
+                [
+                    {
+                        "node": "Decisão de Áudio",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Groq Chat Model": {
+            "ai_languageModel": [
+                [
+                    {
+                        "node": "AI Agent",
+                        "type": "ai_languageModel",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "insert_booking": {
+            "ai_tool": [
+                [
+                    {
+                        "node": "AI Agent",
+                        "type": "ai_tool",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Decisão de Áudio": {
+            "main": [
+                [
+                    {
+                        "node": "Enviar Áudio?",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Enviar Áudio?": {
+            "main": [
+                [
+                    {
+                        "node": "ElevenLabs TTS",
+                        "type": "main",
+                        "index": 0
+                    }
+                ],
+                [
+                    {
+                        "node": "Respond (Só Texto)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "ElevenLabs TTS": {
+            "main": [
+                [
+                    {
+                        "node": "Upload para Supabase Storage",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Upload para Supabase Storage": {
+            "main": [
+                [
+                    {
+                        "node": "Gerar URL do Áudio",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Gerar URL do Áudio": {
+            "main": [
+                [
+                    {
+                        "node": "Respond (Com Áudio)",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    },
+    "pinData": {}
+}
